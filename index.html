@@ -211,12 +211,49 @@
   }
   .btn-retro:hover { background:rgba(167,139,250,0.22); }
 
+  /* ── 撤銷按鈕 & 確認列 ── */
   .btn-undo {
     padding:9px 10px; border-radius:9px; border:1px solid var(--border);
     background:transparent; color:var(--text-muted); font-size:12px;
-    cursor:pointer; transition:all .15s;
+    cursor:pointer; transition:all .15s; white-space:nowrap;
+    font-family:'Noto Sans TC',sans-serif;
   }
   .btn-undo:hover { border-color:var(--jcb-red); color:var(--jcb-red); }
+  .btn-undo.pending {
+    border-color:var(--jcb-red); color:var(--jcb-red);
+    background:var(--jcb-red-dim);
+  }
+
+  /* 撤銷確認列 */
+  .undo-confirm-bar {
+    display:flex; align-items:center; gap:8px;
+    background:var(--jcb-red-dim); border:1px solid var(--jcb-red);
+    border-radius:10px; padding:10px 14px; margin-top:10px;
+    animation:slideDown .18s ease;
+  }
+  @keyframes slideDown {
+    from { opacity:0; transform:translateY(-6px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .undo-confirm-text {
+    flex:1; font-size:12px; color:var(--jcb-red); font-weight:500;
+  }
+  .undo-confirm-sub {
+    font-size:10px; color:var(--text-muted); font-family:'DM Mono',monospace; margin-top:2px;
+  }
+  .btn-undo-yes {
+    padding:7px 14px; border-radius:8px; border:none;
+    background:var(--jcb-red); color:#fff; font-size:12px; font-weight:600;
+    cursor:pointer; font-family:'Noto Sans TC',sans-serif; transition:all .15s; white-space:nowrap;
+  }
+  .btn-undo-yes:hover { background:#ff1f36; }
+  .btn-undo-no {
+    padding:7px 12px; border-radius:8px; border:1px solid var(--border);
+    background:transparent; color:var(--text-muted); font-size:12px;
+    cursor:pointer; font-family:'Noto Sans TC',sans-serif; transition:all .15s; white-space:nowrap;
+  }
+  .btn-undo-no:hover { border-color:var(--text-dim); color:var(--text); }
+
   .log-entry { font-size:11px; color:var(--text-muted); margin-top:8px; font-family:'DM Mono',monospace; line-height:1.9; }
   .log-retro { color: var(--purple) !important; }
 
@@ -520,6 +557,9 @@ function loadData() {
 function save(d) { localStorage.setItem(KEY,JSON.stringify(d)); }
 let data = loadData();
 
+// 追蹤哪張卡的撤銷確認列是展開的
+let undoPendingId = null;
+
 function now() { return new Date(); }
 function ymKey(d) { return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
 
@@ -562,9 +602,32 @@ function doReg(id, dateLabel, ym) {
   data[id].push({month:ym, date:dateLabel});
   save(data); render();
 }
-function doUndo(id) {
-  if (!data[id]||!data[id].length) return;
-  data[id].pop(); save(data); showToast('已撤銷最後一筆登錄'); render();
+
+// 展開撤銷確認列
+function requestUndo(id) {
+  if (undoPendingId === id) {
+    // 再按一次 → 收起
+    undoPendingId = null;
+  } else {
+    undoPendingId = id;
+  }
+  render();
+}
+
+// 確認撤銷
+function confirmUndo(id) {
+  if (!data[id] || !data[id].length) return;
+  data[id].pop();
+  save(data);
+  undoPendingId = null;
+  showToast('已撤銷最後一筆登錄');
+  render();
+}
+
+// 取消撤銷
+function cancelUndo() {
+  undoPendingId = null;
+  render();
 }
 
 function anyRegInMonth(id, ym) {
@@ -676,6 +739,23 @@ function renderCards() {
     const retroBtn = tot < 3
       ? `<button class="btn-retro" onclick="openRetroModal('${c.id}','${c.name}')">＋ 補登</button>`
       : '';
+
+    // 撤銷按鈕 & 確認列
+    const isPending = undoPendingId === c.id;
+    const lastEntry = list.length ? list[list.length-1] : null;
+    const undoBtn = tot > 0
+      ? `<button class="btn-undo${isPending?' pending':''}" onclick="requestUndo('${c.id}')">↩ 撤銷</button>`
+      : '';
+    const undoConfirmBar = isPending && lastEntry ? `
+      <div class="undo-confirm-bar">
+        <div>
+          <div class="undo-confirm-text">⚠️ 確定要撤銷？</div>
+          <div class="undo-confirm-sub">▸ ${lastEntry.date}</div>
+        </div>
+        <button class="btn-undo-no" onclick="cancelUndo()">取消</button>
+        <button class="btn-undo-yes" onclick="confirmUndo('${c.id}')">確認撤銷</button>
+      </div>` : '';
+
     return`<div class="card ${cls}">
       <div class="card-top">
         <div class="card-icon">${c.icon}</div>
@@ -685,11 +765,13 @@ function renderCards() {
       <div class="card-bottom">
         <div class="pips">${pips}<span class="pip-count">${tot}/3</span></div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
-          ${tot>0?`<button class="btn-undo" onclick="doUndo('${c.id}')">↩ 撤銷</button>`:''}
+          ${undoBtn}
           ${retroBtn}
           <button class="btn-register ${chk.ok?'can':'disabled'}" onclick="${chk.ok?`openModal('${c.id}','${c.name}')`:''}">${chk.ok?'✓ 確認登錄':chk.msg}</button>
         </div>
-      </div>${log}</div>`;
+      </div>
+      ${undoConfirmBar}
+      ${log}</div>`;
   }).join('');
 }
 
