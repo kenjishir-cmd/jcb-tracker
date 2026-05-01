@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JCB 登錄管家 v1.17</title>
+<title>JCB 登錄管家 v1.18</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap');
 
@@ -42,7 +42,6 @@
   }
   .header h1 { font-size:22px; font-weight:700; letter-spacing:1px; }
 
-  /* ── 版本徽章 + tooltip ── */
   .ver-wrap { position:relative; display:inline-flex; align-items:center; }
   .ver-tag {
     font-family:'DM Mono',monospace; font-size:10px;
@@ -78,7 +77,6 @@
 
   .header-sub { font-size:12px; color:var(--text-muted); margin-top:4px; }
 
-  /* reminder banner */
   #reminder-banner {
     display:none; border-radius:12px; padding:14px 18px; margin-bottom:20px;
     border:1px solid; position:relative; overflow:hidden;
@@ -98,7 +96,6 @@
     font-size:16px; cursor:pointer; line-height:1;
   }
 
-  /* notif bar */
   .notif-bar {
     background:var(--surface); border:1px solid var(--border);
     border-radius:10px; padding:12px 16px; margin-bottom:20px;
@@ -122,7 +119,6 @@
   }
   .btn-test-notif:hover { border-color:var(--jcb-green); color:var(--jcb-green); }
 
-  /* period bar */
   .period-bar {
     background:var(--surface); border:1px solid var(--border);
     border-radius:12px; padding:14px 20px; margin-bottom:24px;
@@ -154,7 +150,6 @@
     color:var(--text-muted); margin-bottom:12px; padding-left:4px;
   }
 
-  /* cards */
   .cards-grid { display:grid; grid-template-columns:1fr; gap:12px; margin-bottom:28px; }
   .card {
     background:var(--surface); border:1px solid var(--border);
@@ -211,7 +206,6 @@
   }
   .btn-retro:hover { background:rgba(167,139,250,0.22); }
 
-  /* ── 撤銷按鈕 & 確認列 ── */
   .btn-undo {
     padding:9px 10px; border-radius:9px; border:1px solid var(--border);
     background:transparent; color:var(--text-muted); font-size:12px;
@@ -224,7 +218,6 @@
     background:var(--jcb-red-dim);
   }
 
-  /* 撤銷確認列 */
   .undo-confirm-bar {
     display:flex; align-items:center; gap:8px;
     background:var(--jcb-red-dim); border:1px solid var(--jcb-red);
@@ -235,12 +228,8 @@
     from { opacity:0; transform:translateY(-6px); }
     to   { opacity:1; transform:translateY(0); }
   }
-  .undo-confirm-text {
-    flex:1; font-size:12px; color:var(--jcb-red); font-weight:500;
-  }
-  .undo-confirm-sub {
-    font-size:10px; color:var(--text-muted); font-family:'DM Mono',monospace; margin-top:2px;
-  }
+  .undo-confirm-text { flex:1; font-size:12px; color:var(--jcb-red); font-weight:500; }
+  .undo-confirm-sub { font-size:10px; color:var(--text-muted); font-family:'DM Mono',monospace; margin-top:2px; }
   .btn-undo-yes {
     padding:7px 14px; border-radius:8px; border:none;
     background:var(--jcb-red); color:#fff; font-size:12px; font-weight:600;
@@ -257,7 +246,6 @@
   .log-entry { font-size:11px; color:var(--text-muted); margin-top:8px; font-family:'DM Mono',monospace; line-height:1.9; }
   .log-retro { color: var(--purple) !important; }
 
-  /* summary */
   .summary { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 20px; }
   .summary-title { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px; }
   .summary-row { display:flex; justify-content:space-between; font-size:12px; color:var(--text-dim); margin-bottom:6px; }
@@ -277,7 +265,6 @@
     content:''; position:absolute; right:0; top:0;
     width:6px; height:100%; background:rgba(255,255,255,.3); border-radius:99px;
   }
-  .progress-pct { text-align:right; font-size:11px; color:var(--jcb-green); font-family:'DM Mono',monospace; margin-bottom:18px; }
 
   .card-bar-row { margin-bottom:12px; }
   .card-bar-name { font-size:11px; color:var(--text-dim); display:flex; justify-content:space-between; margin-bottom:4px; width:100%; }
@@ -313,7 +300,6 @@
   }
   .btn-reset:hover { border-color:var(--jcb-red); color:var(--jcb-red); }
 
-  /* modal shared */
   .modal-bg {
     display:none; position:fixed; inset:0;
     background:rgba(0,0,0,.78); z-index:100; align-items:center; justify-content:center;
@@ -350,7 +336,6 @@
   .btn-confirm:disabled { background:var(--surface2); color:var(--text-muted); cursor:not-allowed; }
   .btn-cancel { background:var(--surface2); color:var(--text-muted); }
 
-  /* 補登 modal */
   .retro-modal-header { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
   .retro-badge {
     font-size:10px; font-family:'DM Mono',monospace;
@@ -400,21 +385,19 @@
   </div>
   <div style="display:flex; justify-content:center; gap:8px; align-items:center; margin-bottom:4px;">
     <div class="ver-wrap" id="ver-wrap">
-      <span class="ver-tag" onclick="toggleVerTooltip(event)">v1.17</span>
+      <span class="ver-tag" onclick="toggleVerTooltip(event)">v1.18</span>
       <div class="ver-tooltip" id="ver-tooltip">
-        <div class="vt-version">v1.17</div>
-        <div class="vt-date">2026-04-28 發布</div>
+        <div class="vt-version">v1.18</div>
+        <div class="vt-date">2026-05-01 發布</div>
         <hr class="vt-divider">
         <div class="vt-label">本次更新</div>
-        <div class="vt-item">新增 中國信託漢神百貨 JCB</div>
-        <div class="vt-item">富邦 JCB 卡更名為 JU卡紅 JCB</div>
-        <div class="vt-item">悠遊 JCB 更名為 新光悠遊 JCB</div>
-        <div class="vt-item">全年額度更新為 30 次（10 張卡）</div>
+        <div class="vt-item">撤銷按鈕改為二步驟確認，防止誤按</div>
+        <div class="vt-item">確認列顯示即將撤銷的紀錄內容</div>
         <hr class="vt-divider">
         <div class="vt-label">歷史版本</div>
+        <div class="vt-item">v1.17 · 新增漢神百貨、更名富邦 JU卡紅、新光悠遊</div>
         <div class="vt-item">v1.16 · 新增補登功能（紫色標記）</div>
         <div class="vt-item">v1.15 · 瀏覽器通知 + 頁面 Banner</div>
-        <div class="vt-item">v1.14 · 登錄時段選擇器</div>
       </div>
     </div>
     <div class="header-sub" id="current-date" style="margin-top:0;"></div>
@@ -452,7 +435,7 @@
 
 <div style="text-align:center; margin-top:40px; padding:20px 0; border-top:1px solid var(--border);">
   <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px;">
-    JCB 登錄管家 &nbsp;·&nbsp; <span style="color:var(--purple);">v1.17</span> &nbsp;·&nbsp; 2026-04-28
+    JCB 登錄管家 &nbsp;·&nbsp; <span style="color:var(--purple);">v1.18</span> &nbsp;·&nbsp; 2026-05-01
   </div>
   <div style="font-size:10px; color:var(--text-muted); margin-top:4px; opacity:.5;">&copy; 2026 · 10 張卡 · 全年上限 30 次</div>
 </div>
@@ -557,7 +540,6 @@ function loadData() {
 function save(d) { localStorage.setItem(KEY,JSON.stringify(d)); }
 let data = loadData();
 
-// 追蹤哪張卡的撤銷確認列是展開的
 let undoPendingId = null;
 
 function now() { return new Date(); }
@@ -603,18 +585,10 @@ function doReg(id, dateLabel, ym) {
   save(data); render();
 }
 
-// 展開撤銷確認列
 function requestUndo(id) {
-  if (undoPendingId === id) {
-    // 再按一次 → 收起
-    undoPendingId = null;
-  } else {
-    undoPendingId = id;
-  }
+  undoPendingId = (undoPendingId === id) ? null : id;
   render();
 }
-
-// 確認撤銷
 function confirmUndo(id) {
   if (!data[id] || !data[id].length) return;
   data[id].pop();
@@ -623,8 +597,6 @@ function confirmUndo(id) {
   showToast('已撤銷最後一筆登錄');
   render();
 }
-
-// 取消撤銷
 function cancelUndo() {
   undoPendingId = null;
   render();
@@ -678,7 +650,7 @@ function sendNotif(title, body) {
 function testNotif() {
   if (Notification.permission!=='granted') { showToast('請先開啟通知權限'); return; }
   const state=getReminderState();
-  sendNotif(state?state.title:'JCB 登錄測試通知', state?state.body:'版本 v1.17 運作正常！');
+  sendNotif(state?state.title:'JCB 登錄測試通知', state?state.body:'版本 v1.18 運作正常！');
   showToast('已發送測試通知');
 }
 let lastNotifHour=-1;
@@ -739,8 +711,6 @@ function renderCards() {
     const retroBtn = tot < 3
       ? `<button class="btn-retro" onclick="openRetroModal('${c.id}','${c.name}')">＋ 補登</button>`
       : '';
-
-    // 撤銷按鈕 & 確認列
     const isPending = undoPendingId === c.id;
     const lastEntry = list.length ? list[list.length-1] : null;
     const undoBtn = tot > 0
@@ -755,7 +725,6 @@ function renderCards() {
         <button class="btn-undo-no" onclick="cancelUndo()">取消</button>
         <button class="btn-undo-yes" onclick="confirmUndo('${c.id}')">確認撤銷</button>
       </div>` : '';
-
     return`<div class="card ${cls}">
       <div class="card-top">
         <div class="card-icon">${c.icon}</div>
@@ -912,17 +881,14 @@ function showToast(msg){
   clearTimeout(tTimer); tTimer=setTimeout(()=>el.classList.remove('show'),2800);
 }
 
-// ── 版本 Tooltip ──
 function toggleVerTooltip(e) {
   e.stopPropagation();
-  const tt = document.getElementById('ver-tooltip');
-  tt.classList.toggle('show');
+  document.getElementById('ver-tooltip').classList.toggle('show');
 }
 document.addEventListener('click', function(e) {
   const wrap = document.getElementById('ver-wrap');
-  if (wrap && !wrap.contains(e.target)) {
+  if (wrap && !wrap.contains(e.target))
     document.getElementById('ver-tooltip').classList.remove('show');
-  }
 });
 
 function render(){
