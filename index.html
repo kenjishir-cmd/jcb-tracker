@@ -30,53 +30,48 @@
   html, body { margin:0; padding:0; box-sizing:border-box; overscroll-behavior-y: contain; }
   body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC',sans-serif; padding:20px 16px 60px; }
 
-  /* 標題與時間 */
   .header { text-align:center; margin-bottom:18px; }
-  .jcb-badge { background:var(--jcb-red); color:#fff; font-family:'DM Mono'; font-size:12px; padding:3px 8px; border-radius:4px; }
   .header h1 { font-size:22px; font-weight:700; margin:8px 0 4px; }
   .header-sub { font-size:12px; color:var(--text-muted); font-family:'DM Mono'; }
 
-  /* 知識看板 - 獨立區塊 */
+  /* 知識看板：精簡橫向 */
   .knowledge-card {
     background: var(--blue-dim); border: 1px solid var(--blue);
     border-radius: 12px; padding: 12px 16px; margin-bottom: 20px;
-    display: block; position: relative;
+    display: block;
   }
   .k-title { font-size: 13px; font-weight: 700; color: var(--blue); margin-bottom: 4px; display: block; }
   .k-text { font-size: 11px; color: var(--text-dim); line-height: 1.5; display: block; }
 
-  /* 時段狀態 */
-  .period-bar { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px 18px; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+  .period-bar { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 20px; margin-bottom:24px; display:flex; align-items:center; gap:12px; }
   .period-dot { width:10px; height:10px; border-radius:50%; background: #333; }
   .period-dot.open { background:var(--jcb-green); box-shadow:0 0 8px var(--jcb-green); animation:pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
   .period-status { font-size:13px; font-weight:500; }
 
-  .section-title { font-size:11px; color:var(--text-muted); margin-bottom:12px; letter-spacing:1px; }
-
-  /* 原始卡片佈局 - 嚴格定位 */
+  /* 核心卡片：鎖定橫向拉長版面 */
   .cards-grid { display: block; }
   .card {
     background:var(--surface); border:1px solid var(--border); border-radius:14px;
-    padding:16px; margin-bottom:12px; position:relative; overflow:hidden; display: block;
+    padding:16px 18px; margin-bottom:12px; position:relative; overflow:hidden;
+    display: flex; align-items: center; justify-content: space-between; /* 資訊在左、按鈕在右 */
   }
   .card::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--border); }
   .card.maxed::before { background:var(--jcb-red); }
   .card.open-window::before { background:var(--jcb-green); }
 
-  .card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-  .card-icon { width:36px; height:36px; border-radius:8px; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:18px; }
+  .card-left { display: flex; align-items: center; gap: 12px; flex: 1; }
+  .card-icon { width:36px; height:36px; border-radius:8px; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink: 0; }
   .card-name { font-size:14px; font-weight:500; display: block; }
   .card-bank { font-size:11px; color:var(--text-muted); display: block; }
 
-  .card-bottom { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-  .pips { display: flex; gap: 6px; }
-  .pip { width:22px; height:22px; border-radius:50%; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; }
+  .card-center { margin: 0 15px; display: flex; gap: 4px; flex-shrink: 0; }
+  .pip { width:20px; height:20px; border-radius:50%; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; }
   .pip.used { background:var(--jcb-red); border-color:var(--jcb-red); color:#fff; }
 
   .btn-register {
-    min-width: 100px; padding: 10px; border-radius: 9px; border: none;
-    font-size: 13px; font-weight: 600; cursor: pointer; text-align: center;
+    min-width: 90px; padding: 10px 12px; border-radius: 9px; border: none;
+    font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; flex-shrink: 0;
   }
   .btn-register.can { background:var(--jcb-green); color:#0d0f14; }
   .btn-register.disabled { background:var(--surface2); color:var(--text-muted); cursor:not-allowed; }
@@ -88,13 +83,12 @@
 <body>
 
 <div class="header">
-  <span class="jcb-badge">JCB</span>
-  <h1 id="main-title">登錄管家</h1>
+  <h1>登錄管家</h1>
   <div class="header-sub" id="current-date"></div>
 </div>
 
 <div class="knowledge-card" id="knowledge-card">
-  <span class="k-title" id="k-title">卡片知識</span>
+  <span class="k-title" id="k-title">卡片小知識</span>
   <span class="k-text" id="k-text">載入中...</span>
 </div>
 
@@ -103,7 +97,6 @@
   <div class="period-status" id="period-status">偵測中...</div>
 </div>
 
-<div class="section-title">我的 JCB 卡片</div>
 <div class="cards-grid" id="cards-grid"></div>
 <div id="toast"></div>
 
@@ -118,10 +111,10 @@ const CARDS = [
 ];
 
 const KNOWLEDGE_BASE = [
-  { title: "2026 JCB 新制", text: "悠遊卡自動加值 10% 回饋今年改為「每卡每年限登錄 3 次」，請保留給大額月份。" },
-  { title: "機場接送密技", text: "JCB 晶緻卡單筆滿 3 萬享免費接送，每月限量 1,000 趟，需提早搶約。" },
-  { title: "星巴克 50% 優惠", text: "每週一早上 10:30 開放領取序號，持卡至現場購買指定飲品享半價。" },
-  { title: "日本消費回饋", text: "2026 JCB 日本實體消費滿額享回饋，出國前請記得至官網登錄活動。" }
+  { title: "2026 JCB 新制", text: "悠遊卡自動加值 10% 回饋改為「每卡每年限登錄 3 次」。" },
+  { title: "機場接送", text: "晶緻卡單筆滿 3 萬享免費接送，每月限量 1,000 趟。" },
+  { title: "星巴克優惠", text: "每週一 10:30 開放領序號，現場買指定飲品享半價。" },
+  { title: "日本店面回饋", text: "2026 JCB 日本實體消費滿額享回饋，記得官網登錄。" }
 ];
 
 const KEY = 'jcb_v4';
@@ -147,23 +140,21 @@ function render() {
     
     return `
       <div class="card ${cls}">
-        <div class="card-top">
+        <div class="card-left">
           <div class="card-icon">${c.icon}</div>
           <div class="card-meta">
             <span class="card-name">${c.name}</span>
             <span class="card-bank">${c.bank}</span>
           </div>
         </div>
-        <div class="card-bottom">
-          <div class="pips">
-            <div class="pip ${list.length>=1?'used':''}"></div>
-            <div class="pip ${list.length>=2?'used':''}"></div>
-            <div class="pip ${list.length>=3?'used':''}"></div>
-          </div>
-          <button class="btn-register ${isOpen && !isMaxed ?'can':'disabled'}">
-            ${isMaxed ? '已滿' : (isOpen ? '確認登錄' : '待機')}
-          </button>
+        <div class="card-center">
+          <div class="pip ${list.length>=1?'used':''}"></div>
+          <div class="pip ${list.length>=2?'used':''}"></div>
+          <div class="pip ${list.length>=3?'used':''}"></div>
         </div>
+        <button class="btn-register ${isOpen && !isMaxed ?'can':'disabled'}">
+          ${isMaxed ? '已滿' : (isOpen ? '登錄' : '待機')}
+        </button>
       </div>`;
   }).join('');
 }
