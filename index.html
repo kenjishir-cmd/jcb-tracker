@@ -41,120 +41,93 @@
   body {
     background:var(--bg); color:var(--text);
     font-family:'Noto Sans TC',sans-serif;
-    min-height:100vh; padding:24px 16px 60px;
+    min-height:100vh; padding:20px 16px 60px;
   }
 
   /* 離線變色 */
   body.is-offline .header h1 { color: var(--offline-orange) !important; }
-  body.is-offline .header h1::after { content: " (離線模式)"; font-size: 12px; margin-left: 8px; vertical-align: middle; }
+  body.is-offline .header h1::after { content: " (離線)"; font-size: 12px; margin-left: 6px; }
 
-  .header { text-align:center; margin-bottom:20px; }
-  .header-logo { display:inline-flex; align-items:center; gap:10px; margin-bottom:6px; }
+  .header { text-align:center; margin-bottom:16px; }
   .jcb-badge {
     background:var(--jcb-red); color:#fff;
-    font-family:'DM Mono',monospace; font-size:13px; font-weight:500;
-    letter-spacing:2px; padding:4px 10px; border-radius:4px;
+    font-family:'DM Mono',monospace; font-size:12px; font-weight:500;
+    padding:3px 8px; border-radius:4px;
   }
-  .header h1 { font-size:22px; font-weight:700; letter-spacing:1px; }
+  .header h1 { font-size:20px; font-weight:700; margin: 8px 0 4px; }
+  .header-sub { font-size:12px; color:var(--text-muted); font-family: 'DM Mono'; }
 
-  .ver-wrap { position:relative; display:inline-flex; align-items:center; }
-  .ver-tag {
-    font-family:'DM Mono',monospace; font-size:10px;
-    background:var(--purple-dim); color:var(--purple);
-    padding:3px 8px; border-radius:20px; border:1px solid var(--purple);
-    cursor:pointer; user-select:none; transition:background .15s;
-    display:inline-flex; align-items:center; gap:4px;
-  }
-  .ver-tooltip {
-    display:none; position:absolute; top:calc(100% + 8px); left:50%;
-    transform:translateX(-50%);
-    background:var(--surface); border:1px solid var(--purple);
-    border-radius:12px; padding:14px 16px; min-width:220px;
-    box-shadow:0 8px 32px rgba(0,0,0,.5); z-index:200; text-align:left;
-  }
-  .ver-tooltip.show { display:block; animation:fadeIn .15s ease; }
-  @keyframes fadeIn { from{opacity:0;transform:translateX(-50%) translateY(-4px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
-
-  .header-sub { font-size:12px; color:var(--text-muted); margin-top:4px; }
-
-  /* 知識看板 - 緊湊版 */
+  /* 知識看板 - 高度壓縮版 */
   .knowledge-card {
     background: var(--blue-dim); border: 1px solid var(--blue);
-    border-radius: 12px; padding: 12px 16px; margin-bottom: 20px;
-    display: flex; gap: 12px; align-items: flex-start;
+    border-radius: 10px; padding: 10px 14px; margin-bottom: 16px;
+    display: flex; gap: 10px; align-items: center;
   }
-  .k-icon { font-size: 18px; }
+  .k-icon { font-size: 16px; }
   .k-content { flex: 1; }
-  .k-title { font-size: 12px; font-weight: 700; color: var(--blue); margin-bottom: 2px; }
-  .k-text { font-size: 11px; color: var(--text-dim); line-height: 1.5; }
+  .k-title { font-size: 11px; font-weight: 700; color: var(--blue); }
+  .k-text { font-size: 11px; color: var(--text-dim); line-height: 1.4; }
 
-  /* 通知與時段欄位 */
-  .notif-bar {
-    background:var(--surface); border:1px solid var(--border);
-    border-radius:10px; padding:12px 16px; margin-bottom:16px;
-    display:flex; align-items:center; gap:12px;
-  }
-  .notif-bar-label { font-size:12px; color:var(--text-muted); flex:1; }
-  .btn-notif { padding:7px 14px; border-radius:8px; border:1px solid var(--border); background:var(--surface2); color:var(--text); font-size:12px; cursor:pointer; }
-
+  /* 時段狀態 */
   .period-bar {
     background:var(--surface); border:1px solid var(--border);
-    border-radius:12px; padding:14px 20px; margin-bottom:24px;
-    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    border-radius:10px; padding:10px 16px; margin-bottom:20px;
+    display:flex; align-items:center; gap:10px;
   }
-  .period-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
-  .period-dot.open { background:var(--jcb-green); box-shadow:0 0 8px var(--jcb-green); animation:pulse 2s infinite; }
+  .period-dot { width:8px; height:8px; border-radius:50%; background: #333; }
+  .period-dot.open { background:var(--jcb-green); box-shadow:0 0 6px var(--jcb-green); animation:pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
-  .period-status { font-size:13px; font-weight:500; }
+  .period-status { font-size:12px; font-weight:500; }
   .period-status.open { color:var(--jcb-green); }
 
-  /* 卡片版面 - 恢復原本的精緻感 */
-  .cards-grid { display:grid; grid-template-columns:1fr; gap:12px; margin-bottom:28px; }
+  /* 卡片版面 - 嚴格限制高度與間距 */
+  .cards-grid { display:grid; grid-template-columns:1fr; gap:10px; }
   .card {
     background:var(--surface); border:1px solid var(--border);
-    border-radius:14px; padding:16px 18px;
-    transition:border-color .2s; position:relative; overflow:hidden;
+    border-radius:12px; padding:12px 14px;
+    position:relative; overflow:hidden;
+    display: flex; flex-direction: column; gap: 8px;
   }
   .card::before {
     content:''; position:absolute; top:0; left:0;
-    width:3px; height:100%; background:var(--border); transition:background .2s;
+    width:3px; height:100%; background:var(--border);
   }
   .card.maxed::before        { background:var(--jcb-red); }
   .card.monthly-done::before { background:var(--yellow); }
   .card.open-window::before  { background:var(--jcb-green); }
 
-  .card-top { display:flex; align-items:flex-start; gap:12px; margin-bottom:12px; }
+  .card-top { display:flex; align-items:center; gap:10px; }
   .card-icon {
-    width:36px; height:36px; border-radius:8px;
+    width:32px; height:32px; border-radius:6px;
     display:flex; align-items:center; justify-content:center;
-    font-size:18px; flex-shrink:0; background:var(--surface2);
+    font-size:16px; background:var(--surface2);
   }
   .card-meta { flex:1; }
-  .card-name { font-size:14px; font-weight:500; line-height:1.3; }
-  .card-bank { font-size:11px; color:var(--text-muted); margin-top:2px; }
+  .card-name { font-size:13px; font-weight:500; }
+  .card-bank { font-size:10px; color:var(--text-muted); }
 
-  .card-bottom { display:flex; align-items:center; justify-content:space-between; gap:8px; }
-  .pips { display:flex; gap:5px; align-items:center; }
+  .card-bottom { display:flex; align-items:center; justify-content:space-between; }
+  .pips { display:flex; gap:4px; }
   .pip {
-    width:22px; height:22px; border-radius:50%; border:2px solid var(--border);
-    display:flex; align-items:center; justify-content:center; font-size:10px;
+    width:18px; height:18px; border-radius:50%; border:1.5px solid var(--border);
+    display:flex; align-items:center; justify-content:center; font-size:9px;
   }
   .pip.used { background:var(--jcb-red); border-color:var(--jcb-red); color:#fff; }
 
   .btn-register {
-    flex:1; padding:9px 14px; border-radius:9px; border:none;
-    font-size:13px; font-weight:500; cursor:pointer; transition:all .15s;
+    padding:6px 12px; border-radius:6px; border:none;
+    font-size:12px; font-weight:500; cursor:pointer;
+    min-width: 80px; text-align: center;
   }
   .btn-register.can      { background:var(--jcb-green); color:#0d0f14; }
   .btn-register.disabled { background:var(--surface2); color:var(--text-muted); cursor:not-allowed; }
 
-  .log-entry { font-size:11px; color:var(--text-muted); margin-top:8px; font-family:'DM Mono',monospace; line-height:1.9; }
-
+  /* Toast */
   #toast {
-    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(80px);
     background:var(--surface2); border:1px solid var(--border); color:var(--text);
-    padding:10px 20px; border-radius:30px; font-size:13px; z-index:999;
-    transition:transform .3s, opacity .3s; opacity:0; pointer-events:none;
+    padding:8px 16px; border-radius:20px; font-size:12px; z-index:999;
+    transition:transform .3s, opacity .3s; opacity:0;
   }
   #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 </style>
@@ -166,40 +139,20 @@
     <span class="jcb-badge">JCB</span>
     <h1>登錄管家</h1>
   </div>
-  <div style="display:flex; justify-content:center; gap:8px; align-items:center;">
-    <div class="ver-wrap" id="ver-wrap">
-      <span class="ver-tag" onclick="toggleVerTooltip(event)">v1.20</span>
-      <div class="ver-tooltip" id="ver-tooltip">
-        <div style="color:var(--purple); font-weight:700;">v1.20 更新</div>
-        <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">
-          · 恢復原本緊湊版面佈局<br>
-          · 支援星期顯示 (週一至週日)<br>
-          · 加入隨機信用卡知識看板
-        </div>
-      </div>
-    </div>
-    <div class="header-sub" id="current-date"></div>
-  </div>
+  <div class="header-sub" id="current-date"></div>
 </div>
 
 <div class="knowledge-card" id="knowledge-card">
   <div class="k-icon">💡</div>
   <div class="k-content">
-    <div class="k-title" id="k-title">每日卡片小知識</div>
+    <div class="k-title" id="k-title">卡片知識</div>
     <div class="k-text" id="k-text">載入中...</div>
   </div>
 </div>
 
-<div class="notif-bar">
-  <div class="notif-bar-label">🔔 通知提醒</div>
-  <button class="btn-notif" id="btn-notif" onclick="requestNotif()">開啟通知</button>
-</div>
-
 <div class="period-bar">
   <div class="period-dot" id="period-dot"></div>
-  <div class="period-info">
-    <div class="period-status" id="period-status">偵測中...</div>
-  </div>
+  <div class="period-status" id="period-status">偵測中...</div>
 </div>
 
 <div class="section-title">我的 JCB 卡片</div>
@@ -218,11 +171,11 @@ const CARDS = [
 ];
 
 const KNOWLEDGE_BASE = [
-  { title: "2026 JCB 重要變更", text: "悠遊卡自動加值 10% 回饋今年改為「每卡每年限登錄 3 次」，建議保留給大額消費月份。" },
-  { title: "機場接送密技", text: "JCB 晶緻卡單筆消費滿 NT$30,000 可享免費接送，每月限量 1,000 趟，需提早搶約。" },
-  { title: "星巴克半價", text: "每週一早上 10:30 開放領取序號，持卡至店面買指定飲品享半價。" },
-  { title: "日本店面回饋", text: "2026 年 JCB 在日本實體店面消費滿額享回饋，出國前記得去官網登錄活動。" },
-  { title: "自動加值小知識", text: "餘額低於 100 元會自動加值 500 元。這筆加值也算在信用卡的消費回饋內喔！" }
+  { title: "2026 JCB 新制", text: "悠遊卡自動加值 10% 改為「每卡每年限登錄 3 次」，請精打細算。" },
+  { title: "機場接送", text: "晶緻卡單筆滿 3 萬享免費接送，每月限量 1,000 趟，需提早預約。" },
+  { title: "星巴克優惠", text: "每週一 10:30 開放領序號，現場買指定飲品享半價。" },
+  { title: "日本店面回饋", text: "2026 JCB 日本實體消費滿額享回饋，出國前記得官網登錄。" },
+  { title: "自動加值", text: "餘額低於 100 元自動加 500。這筆也算在信用卡消費回饋內！" }
 ];
 
 const KEY = 'jcb_v4';
@@ -234,19 +187,13 @@ function showRandomKnowledge() {
   document.getElementById('k-text').textContent = item.text;
 }
 
-function updateOnlineStatus() {
-  document.body.classList.toggle('is-offline', !navigator.onLine);
-}
-window.addEventListener('online', updateOnlineStatus);
-window.addEventListener('offline', updateOnlineStatus);
-
 function getWeekday(date) {
   return ["週日", "週一", "週二", "週三", "週四", "週五", "週六"][date.getDay()];
 }
 
 function render() {
   const t = new Date();
-  const dateStr = `${t.getFullYear()}年${t.getMonth()+1}月${t.getDate()}日 (${getWeekday(t)}) ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
+  const dateStr = `${t.getFullYear()}/${t.getMonth()+1}/${t.getDate()} (${getWeekday(t)}) ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
   document.getElementById('current-date').textContent = dateStr;
 
   const day = t.getDate();
@@ -270,26 +217,22 @@ function render() {
         <div class="card-bottom">
           <div class="pips">${[0,1,2].map(i => `<div class="pip ${i<list.length?'used':''}"></div>`).join('')}</div>
           <button class="btn-register ${isOpen && !isMaxed ?'can':'disabled'}">
-            ${isMaxed ? '全年已滿' : (isOpen ? '確認登錄' : '待機中')}
+            ${isMaxed ? '已滿' : (isOpen ? '確認登錄' : '待機')}
           </button>
         </div>
       </div>`;
   }).join('');
 }
 
-function toggleVerTooltip(e) {
-  e.stopPropagation();
-  document.getElementById('ver-tooltip').classList.toggle('show');
-}
-
-function showToast(msg){
+// 監聽網路
+window.addEventListener('online', () => document.body.classList.remove('is-offline'));
+window.addEventListener('offline', () => {
+  document.body.classList.add('is-offline');
   const el=document.getElementById('toast');
-  el.textContent=msg; el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'), 2500);
-}
+  el.textContent='⚠️ 離線模式'; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2000);
+});
 
-// 初始化
-updateOnlineStatus();
 render();
 showRandomKnowledge();
 setInterval(render, 60000);
