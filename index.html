@@ -55,7 +55,7 @@
   body.is-offline .header h1 { color: var(--offline-orange) !important; }
   body.is-offline .header h1::after { content: " (離線模式)"; font-size: 12px; margin-left: 8px; vertical-align: middle; }
 
-  .header { text-align:center; margin-bottom:20px; }
+  .header { text-align:center; margin-bottom:20px; position:relative; z-index:300; }
   .header-logo { display:inline-flex; align-items:center; gap:10px; margin-bottom:6px; }
   .jcb-badge {
     background:var(--jcb-red); color:#fff;
@@ -75,21 +75,16 @@
   .ver-tag:hover { background:rgba(167,139,250,0.22); }
   .ver-tag::before { content:'◆'; font-size:7px; }
   .ver-tooltip {
-    display:none; position:absolute; top:calc(100% + 8px); left:50%;
+    display:none; position:fixed; top:auto; left:50%;
     transform:translateX(-50%);
     background:var(--surface); border:1px solid var(--purple);
-    border-radius:12px; padding:14px 16px; min-width:220px;
-    box-shadow:0 8px 32px rgba(0,0,0,.5);
-    z-index:200; text-align:left;
+    border-radius:12px; padding:14px 16px; min-width:240px; max-width:90vw;
+    box-shadow:0 8px 32px rgba(0,0,0,.7);
+    z-index:9999; text-align:left;
   }
-  .ver-tooltip::before {
-    content:''; position:absolute; top:-6px; left:50%;
-    width:10px; height:10px; background:var(--surface);
-    border-left:1px solid var(--purple); border-top:1px solid var(--purple);
-    transform:translateX(-50%) rotate(45deg);
-  }
-  .ver-tooltip.show { display:block; animation:fadeIn .15s ease; }
-  @keyframes fadeIn { from{opacity:0;transform:translateX(-50%) translateY(-4px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+  .ver-tooltip::before { display:none; }
+  .ver-tooltip.show { display:block; animation:fadeInVt .15s ease; }
+  @keyframes fadeInVt { from{opacity:0} to{opacity:1} }
   .vt-version { font-family:'DM Mono',monospace; font-size:18px; font-weight:700; color:var(--purple); margin-bottom:2px; }
   .vt-date { font-size:10px; color:var(--text-muted); font-family:'DM Mono',monospace; margin-bottom:10px; }
   .vt-divider { border:none; border-top:1px solid var(--border); margin:8px 0; }
@@ -567,7 +562,9 @@
 
 <div style="text-align:center; margin-top:40px; padding:20px 0; border-top:1px solid var(--border);">
   <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px;">
-    JCB 登錄管家 &nbsp;·&nbsp; <span style="color:var(--purple);">v1.21</span> &nbsp;·&nbsp; 2026-05-03
+    JCB 登錄管家 &nbsp;·&nbsp;
+    <span id="footer-ver-tag" onclick="toggleFooterVer(event)" style="color:var(--purple); cursor:pointer; text-decoration:underline; text-underline-offset:3px; text-decoration-style:dotted;">v1.21 📋</span>
+    &nbsp;·&nbsp; 2026-05-03
   </div>
   <div style="font-size:10px; color:var(--text-muted); margin-top:4px; opacity:.5;">&copy; 2026 · 10 張卡 · 全年上限 30 次</div>
 </div>
@@ -1159,9 +1156,42 @@ function showToast(msg){
   clearTimeout(tTimer); tTimer=setTimeout(()=>el.classList.remove('show'),2800);
 }
 
+function toggleFooterVer(e) {
+  e.stopPropagation();
+  const vt = document.getElementById('ver-tooltip');
+  const tag = e.currentTarget;
+  const rect = tag.getBoundingClientRect();
+  const isShow = vt.classList.contains('show');
+  vt.classList.remove('show');
+  if (!isShow) {
+    const tooltipW = 248;
+    let left = rect.left + rect.width / 2 - tooltipW / 2;
+    if (left < 8) left = 8;
+    if (left + tooltipW > window.innerWidth - 8) left = window.innerWidth - tooltipW - 8;
+    // 底部版本：tooltip 往上彈出
+    vt.style.left = left + 'px';
+    vt.style.top = (rect.top - 8) + 'px';
+    vt.style.transform = 'translateY(-100%)';
+    vt.classList.add('show');
+  }
+}
 function toggleVerTooltip(e) {
   e.stopPropagation();
-  document.getElementById('ver-tooltip').classList.toggle('show');
+  const vt = document.getElementById('ver-tooltip');
+  const tag = e.currentTarget;
+  const rect = tag.getBoundingClientRect();
+  const isShow = vt.classList.contains('show');
+  vt.classList.remove('show');
+  if (!isShow) {
+    const tooltipW = 248;
+    let left = rect.left + rect.width / 2 - tooltipW / 2;
+    if (left < 8) left = 8;
+    if (left + tooltipW > window.innerWidth - 8) left = window.innerWidth - tooltipW - 8;
+    vt.style.left = left + 'px';
+    vt.style.top = (rect.bottom + 8) + 'px';
+    vt.style.transform = 'none';
+    vt.classList.add('show');
+  }
 }
 document.addEventListener('click', () => {
   const vt = document.getElementById('ver-tooltip');
