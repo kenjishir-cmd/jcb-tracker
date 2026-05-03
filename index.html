@@ -8,7 +8,7 @@
 <link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>JCB 登錄管家 v1.19</title>
+<title>JCB 登錄管家 v1.20</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap');
 
@@ -91,7 +91,7 @@
   .vt-item { font-size:11px; color:var(--text-dim); line-height:1.7; padding-left:10px; position:relative; }
   .vt-item::before { content:'·'; position:absolute; left:0; color:var(--purple); }
 
-  .header-sub { font-size:12px; color:var(--text-muted); margin-top:4px; }
+  .header-sub { font-size:12px; color:var(--text-muted); margin-top:4px; font-family: 'DM Mono', monospace; }
 
   #reminder-banner {
     display:none; border-radius:12px; padding:14px 18px; margin-bottom:20px;
@@ -401,19 +401,18 @@
   </div>
   <div style="display:flex; justify-content:center; gap:8px; align-items:center; margin-bottom:4px;">
     <div class="ver-wrap" id="ver-wrap">
-      <span class="ver-tag" onclick="toggleVerTooltip(event)">v1.19</span>
+      <span class="ver-tag" onclick="toggleVerTooltip(event)">v1.20</span>
       <div class="ver-tooltip" id="ver-tooltip">
-        <div class="vt-version">v1.19</div>
+        <div class="vt-version">v1.20</div>
         <div class="vt-date">2026-05-03 發布</div>
         <hr class="vt-divider">
         <div class="vt-label">本次更新</div>
-        <div class="vt-item">支援離線模式：斷網時標題變更為橘色</div>
-        <div class="vt-item">UX 優化：禁止下拉重新整理 (防止誤刷)</div>
-        <div class="vt-item">功能穩定性：強化連線與離線共存邏輯</div>
+        <div class="vt-item">新增星期顯示功能</div>
+        <div class="vt-item">優化日期時間排版樣式</div>
         <hr class="vt-divider">
         <div class="vt-label">歷史版本</div>
+        <div class="vt-item">v1.19 · 支援離線模式、禁止下拉重新整理</div>
         <div class="vt-item">v1.18 · 撤銷二步驟確認，防止誤觸</div>
-        <div class="vt-item">v1.16 · 新增補登功能（紫色標記）</div>
       </div>
     </div>
     <div class="header-sub" id="current-date" style="margin-top:0;"></div>
@@ -451,7 +450,7 @@
 
 <div style="text-align:center; margin-top:40px; padding:20px 0; border-top:1px solid var(--border);">
   <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px;">
-    JCB 登錄管家 &nbsp;·&nbsp; <span style="color:var(--purple);">v1.19</span> &nbsp;·&nbsp; 2026-05-03
+    JCB 登錄管家 &nbsp;·&nbsp; <span style="color:var(--purple);">v1.20</span> &nbsp;·&nbsp; 2026-05-03
   </div>
   <div style="font-size:10px; color:var(--text-muted); margin-top:4px; opacity:.5;">&copy; 2026 · 10 張卡 · 全年上限 30 次</div>
 </div>
@@ -520,7 +519,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// --- 卡片與資料邏輯 (v1.18 基礎) ---
+// --- 卡片與資料邏輯 ---
 const CARDS = [
   { id:'federal_breezy', bank:'聯邦銀行', name:'微風 JCB',      icon:'🌿' },
   { id:'federal_crane',  bank:'聯邦銀行', name:'吉鶴 JCB',      icon:'🦢' },
@@ -686,7 +685,7 @@ function sendNotif(title, body) {
 function testNotif() {
   if (Notification.permission!=='granted') { showToast('請先開啟通知權限'); return; }
   const state=getReminderState();
-  sendNotif(state?state.title:'JCB 登錄測試通知', state?state.body:'版本 v1.19 運作正常！');
+  sendNotif(state?state.title:'JCB 登錄測試通知', state?state.body:'版本 v1.20 運作正常！');
   showToast('已發送測試通知');
 }
 
@@ -902,9 +901,13 @@ document.addEventListener('click', () => {
 
 function render(){
   const t=now();
-  document.getElementById('current-date').textContent=
-    t.getFullYear()+' 年 '+(t.getMonth()+1)+' 月 '+t.getDate()+' 日　'+
-    String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+  const weekDays = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
+  const dayName = weekDays[t.getDay()];
+
+  document.getElementById('current-date').textContent = 
+    t.getFullYear() + ' 年 ' + (t.getMonth() + 1) + ' 月 ' + t.getDate() + ' 日 (' + dayName + ') ' +
+    String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
+
   renderPeriodBar(); renderCards(); renderSummary(); renderBanner(); updateNotifUI();
 }
 
