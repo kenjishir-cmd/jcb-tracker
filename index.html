@@ -55,7 +55,7 @@
   body.is-offline .header h1 { color: var(--offline-orange) !important; }
   body.is-offline .header h1::after { content: " (離線模式)"; font-size: 12px; margin-left: 8px; vertical-align: middle; }
 
-  .header { text-align:center; margin-bottom:20px; }
+  .header { text-align:center; margin-bottom:20px; position:relative; z-index:300; }
   .header-logo { display:inline-flex; align-items:center; gap:10px; margin-bottom:6px; }
   .jcb-badge {
     background:var(--jcb-red); color:#fff;
@@ -75,21 +75,16 @@
   .ver-tag:hover { background:rgba(167,139,250,0.22); }
   .ver-tag::before { content:'◆'; font-size:7px; }
   .ver-tooltip {
-    display:none; position:absolute; top:calc(100% + 8px); left:50%;
+    display:none; position:fixed; top:auto; left:50%;
     transform:translateX(-50%);
     background:var(--surface); border:1px solid var(--purple);
-    border-radius:12px; padding:14px 16px; min-width:220px;
-    box-shadow:0 8px 32px rgba(0,0,0,.5);
-    z-index:200; text-align:left;
+    border-radius:12px; padding:14px 16px; min-width:240px; max-width:90vw;
+    box-shadow:0 8px 32px rgba(0,0,0,.7);
+    z-index:9999; text-align:left;
   }
-  .ver-tooltip::before {
-    content:''; position:absolute; top:-6px; left:50%;
-    width:10px; height:10px; background:var(--surface);
-    border-left:1px solid var(--purple); border-top:1px solid var(--purple);
-    transform:translateX(-50%) rotate(45deg);
-  }
-  .ver-tooltip.show { display:block; animation:fadeIn .15s ease; }
-  @keyframes fadeIn { from{opacity:0;transform:translateX(-50%) translateY(-4px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+  .ver-tooltip::before { display:none; }
+  .ver-tooltip.show { display:block; animation:fadeInVt .15s ease; }
+  @keyframes fadeInVt { from{opacity:0} to{opacity:1} }
   .vt-version { font-family:'DM Mono',monospace; font-size:18px; font-weight:700; color:var(--purple); margin-bottom:2px; }
   .vt-date { font-size:10px; color:var(--text-muted); font-family:'DM Mono',monospace; margin-bottom:10px; }
   .vt-divider { border:none; border-top:1px solid var(--border); margin:8px 0; }
@@ -191,6 +186,34 @@
     to   { opacity:1; transform:translateY(0); }
   }
   .kp-content-wrap { animation:kpSlideIn .28s ease; }
+
+  /* 進度條 */
+  .kp-progress-track {
+    width:100%; height:2px; background:var(--border);
+    border-radius:99px; overflow:hidden; margin-top:12px;
+  }
+  .kp-progress-fill {
+    height:100%; border-radius:99px; width:0%;
+    background:linear-gradient(90deg, var(--kp-accent-start), var(--kp-accent-end));
+    transition: background 0.4s;
+  }
+  .kp-progress-fill.running {
+    animation: kpProgress var(--kp-duration, 6s) linear forwards;
+  }
+  @keyframes kpProgress {
+    from { width: 0%; }
+    to   { width: 100%; }
+  }
+
+  /* 暫停按鈕 */
+  .kp-pause {
+    width:28px; height:28px; border-radius:8px; border:1px solid var(--border);
+    background:var(--surface2); color:var(--text-muted); font-size:11px;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:all .15s; flex-shrink:0; font-family:'DM Mono',monospace;
+  }
+  .kp-pause:hover { border-color:var(--yellow); color:var(--yellow); }
+  .kp-pause.paused { border-color:var(--yellow); color:var(--yellow); background:var(--yellow-dim); }
 
   /* =============================================
      其餘原版樣式（不動）
@@ -523,11 +546,15 @@
       <span class="kp-spark" id="kp-spark"></span>
       <span class="kp-label" id="kp-label" style="color:var(--teal)"></span>
       <span class="kp-tag" id="kp-tag"></span>
-      <button class="kp-shuffle" onclick="shuffleKnowledge()" title="換一則">⟳</button>
+      <button class="kp-pause" id="kp-pause" onclick="toggleKpPause()" title="暫停/繼續">⏸</button>
+      <button class="kp-shuffle" onclick="kpManualNext()" title="下一則">⟳</button>
     </div>
     <div class="kp-content-wrap" id="kp-content-wrap">
       <div class="kp-title" id="kp-title"></div>
       <div class="kp-body" id="kp-body"></div>
+    </div>
+    <div class="kp-progress-track">
+      <div class="kp-progress-fill" id="kp-progress"></div>
     </div>
     <div class="kp-footer">
       <div class="kp-dots" id="kp-dots"></div>
@@ -567,7 +594,9 @@
 
 <div style="text-align:center; margin-top:40px; padding:20px 0; border-top:1px solid var(--border);">
   <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px;">
-    JCB 登錄管家 &nbsp;·&nbsp; <span style="color:var(--purple);">v1.21</span> &nbsp;·&nbsp; 2026-05-03
+    JCB 登錄管家 &nbsp;·&nbsp;
+    <span id="footer-ver-tag" onclick="toggleFooterVer(event)" style="color:var(--purple); cursor:pointer; text-decoration:underline; text-underline-offset:3px; text-decoration-style:dotted;">v1.21 📋</span>
+    &nbsp;·&nbsp; 2026-05-03
   </div>
   <div style="font-size:10px; color:var(--text-muted); margin-top:4px; opacity:.5;">&copy; 2026 · 10 張卡 · 全年上限 30 次</div>
 </div>
@@ -711,6 +740,11 @@ const KNOWLEDGE = [
 ];
 
 let kpIndex = Math.floor(Math.random() * KNOWLEDGE.length);
+const KP_DURATION = 6000; // 每則停留 6 秒
+let kpTimer = null;
+let kpPaused = false;
+let kpProgressStart = null;
+let kpElapsed = 0; // 已經過的 ms（暫停時保留）
 
 function applyKnowledgeTheme(k) {
   const panel = document.getElementById('knowledge-panel');
@@ -738,18 +772,18 @@ function renderKnowledge(idx) {
   // 重建 content-wrap 觸發動畫
   const wrap = document.getElementById('kp-content-wrap');
   wrap.style.animation = 'none';
-  wrap.offsetHeight; // reflow
+  wrap.offsetHeight;
   wrap.style.animation = '';
 
   document.getElementById('kp-title').textContent = k.title;
   document.getElementById('kp-body').innerHTML = k.body;
 
-  // dots
+  // dots（5個循環顯示）
   const dotsEl = document.getElementById('kp-dots');
   const DOTS_SHOW = 5;
   let dotsHTML = '';
   for (let i = 0; i < DOTS_SHOW; i++) {
-    dotsHTML += `<div class="kp-dot${i === (idx % DOTS_SHOW) ? ' active' : ''}"></div>`;
+    dotsHTML += `<div class="kp-dot${i === (idx % DOTS_SHOW) ? ' active' : ''}" onclick="kpJumpTo(${i}, ${idx})"></div>`;
   }
   dotsEl.innerHTML = dotsHTML;
   dotsEl.style.setProperty('--kp-accent-start', k.theme.accent[0]);
@@ -757,11 +791,78 @@ function renderKnowledge(idx) {
   document.getElementById('kp-counter').textContent = (idx + 1) + ' / ' + KNOWLEDGE.length;
 }
 
-function shuffleKnowledge() {
-  const prev = kpIndex;
-  do { kpIndex = Math.floor(Math.random() * KNOWLEDGE.length); } while (kpIndex === prev && KNOWLEDGE.length > 1);
-  renderKnowledge(kpIndex);
+// 進度條控制
+function kpStartProgress(fromElapsed) {
+  const bar = document.getElementById('kp-progress');
+  const remaining = KP_DURATION - (fromElapsed || 0);
+  const startPct = ((fromElapsed || 0) / KP_DURATION) * 100;
+
+  bar.style.transition = 'none';
+  bar.style.animation = 'none';
+  bar.style.width = startPct + '%';
+  bar.offsetHeight; // reflow
+
+  // 設定 CSS var 讓 animation duration = 剩餘時間
+  bar.style.setProperty('--kp-duration', (remaining / 1000) + 's');
+  bar.classList.remove('running');
+  bar.offsetHeight;
+  bar.classList.add('running');
+
+  kpProgressStart = Date.now() - (fromElapsed || 0);
+
+  clearTimeout(kpTimer);
+  kpTimer = setTimeout(() => {
+    kpElapsed = 0;
+    kpIndex = (kpIndex + 1) % KNOWLEDGE.length;
+    renderKnowledge(kpIndex);
+    if (!kpPaused) kpStartProgress(0);
+  }, remaining);
 }
+
+function kpStopProgress() {
+  clearTimeout(kpTimer);
+  const bar = document.getElementById('kp-progress');
+  // 記錄目前進度
+  kpElapsed = kpProgressStart ? Date.now() - kpProgressStart : 0;
+  if (kpElapsed > KP_DURATION) kpElapsed = KP_DURATION;
+  // 凍結進度條
+  const pct = (kpElapsed / KP_DURATION) * 100;
+  bar.classList.remove('running');
+  bar.style.animation = 'none';
+  bar.style.width = pct + '%';
+}
+
+function toggleKpPause() {
+  kpPaused = !kpPaused;
+  const btn = document.getElementById('kp-pause');
+  if (kpPaused) {
+    btn.textContent = '▶';
+    btn.classList.add('paused');
+    btn.title = '繼續播放';
+    kpStopProgress();
+  } else {
+    btn.textContent = '⏸';
+    btn.classList.remove('paused');
+    btn.title = '暫停';
+    kpStartProgress(kpElapsed);
+  }
+}
+
+function kpManualNext() {
+  kpElapsed = 0;
+  kpIndex = (kpIndex + 1) % KNOWLEDGE.length;
+  renderKnowledge(kpIndex);
+  if (!kpPaused) kpStartProgress(0);
+  else {
+    // 暫停中手動切換：重置進度條但不啟動
+    const bar = document.getElementById('kp-progress');
+    bar.classList.remove('running');
+    bar.style.animation = 'none';
+    bar.style.width = '0%';
+  }
+}
+
+function shuffleKnowledge() { kpManualNext(); }
 
 // =============================================
 // 離線狀態偵測
@@ -1159,9 +1260,42 @@ function showToast(msg){
   clearTimeout(tTimer); tTimer=setTimeout(()=>el.classList.remove('show'),2800);
 }
 
+function toggleFooterVer(e) {
+  e.stopPropagation();
+  const vt = document.getElementById('ver-tooltip');
+  const tag = e.currentTarget;
+  const rect = tag.getBoundingClientRect();
+  const isShow = vt.classList.contains('show');
+  vt.classList.remove('show');
+  if (!isShow) {
+    const tooltipW = 248;
+    let left = rect.left + rect.width / 2 - tooltipW / 2;
+    if (left < 8) left = 8;
+    if (left + tooltipW > window.innerWidth - 8) left = window.innerWidth - tooltipW - 8;
+    // 底部版本：tooltip 往上彈出
+    vt.style.left = left + 'px';
+    vt.style.top = (rect.top - 8) + 'px';
+    vt.style.transform = 'translateY(-100%)';
+    vt.classList.add('show');
+  }
+}
 function toggleVerTooltip(e) {
   e.stopPropagation();
-  document.getElementById('ver-tooltip').classList.toggle('show');
+  const vt = document.getElementById('ver-tooltip');
+  const tag = e.currentTarget;
+  const rect = tag.getBoundingClientRect();
+  const isShow = vt.classList.contains('show');
+  vt.classList.remove('show');
+  if (!isShow) {
+    const tooltipW = 248;
+    let left = rect.left + rect.width / 2 - tooltipW / 2;
+    if (left < 8) left = 8;
+    if (left + tooltipW > window.innerWidth - 8) left = window.innerWidth - tooltipW - 8;
+    vt.style.left = left + 'px';
+    vt.style.top = (rect.bottom + 8) + 'px';
+    vt.style.transform = 'none';
+    vt.classList.add('show');
+  }
 }
 document.addEventListener('click', () => {
   const vt = document.getElementById('ver-tooltip');
@@ -1178,8 +1312,9 @@ function render(){
   renderPeriodBar(); renderCards(); renderSummary(); renderBanner(); updateNotifUI();
 }
 
-// 初始化知識看板（只在載入時隨機一次）
+// 初始化知識看板（隨機起點 + 啟動自動輪播）
 renderKnowledge(kpIndex);
+kpStartProgress(0);
 render();
 setInterval(render, 60000);
 </script>
