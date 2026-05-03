@@ -18,137 +18,84 @@
     --surface2: #1e2230;
     --border: #2a2f3d;
     --jcb-red: #e5001a;
-    --jcb-red-dim: rgba(229,0,26,0.15);
     --jcb-green: #00c97a;
-    --jcb-green-dim: rgba(0,201,122,0.12);
     --yellow: #f5c842;
-    --yellow-dim: rgba(245,200,66,0.12);
     --blue: #4f8ef7;
     --blue-dim: rgba(79,142,247,0.13);
-    --purple: #a78bfa;
-    --purple-dim: rgba(167,139,250,0.13);
-    --offline-orange: #ff9800;
     --text: #e8eaf0;
     --text-muted: #6b7280;
     --text-dim: #9ca3af;
   }
 
-  html, body { 
-    margin:0; padding:0; box-sizing:border-box; 
-    overscroll-behavior-y: contain; 
-  }
+  html, body { margin:0; padding:0; box-sizing:border-box; overscroll-behavior-y: contain; }
+  body { background:var(--bg); color:var(--text); font-family:'Noto Sans TC',sans-serif; padding:20px 16px 60px; }
 
-  body {
-    background:var(--bg); color:var(--text);
-    font-family:'Noto Sans TC',sans-serif;
-    min-height:100vh; padding:24px 16px 60px;
-  }
+  /* 標題與時間 */
+  .header { text-align:center; margin-bottom:18px; }
+  .jcb-badge { background:var(--jcb-red); color:#fff; font-family:'DM Mono'; font-size:12px; padding:3px 8px; border-radius:4px; }
+  .header h1 { font-size:22px; font-weight:700; margin:8px 0 4px; }
+  .header-sub { font-size:12px; color:var(--text-muted); font-family:'DM Mono'; }
 
-  /* 離線變色 */
-  body.is-offline .header h1 { color: var(--offline-orange) !important; }
-  body.is-offline .header h1::after { content: " (離線)"; font-size: 12px; margin-left: 8px; vertical-align: middle; }
-
-  .header { text-align:center; margin-bottom:20px; }
-  .header-logo { display:inline-flex; align-items:center; gap:10px; margin-bottom:6px; }
-  .jcb-badge {
-    background:var(--jcb-red); color:#fff;
-    font-family:'DM Mono',monospace; font-size:13px; font-weight:500;
-    letter-spacing:2px; padding:4px 10px; border-radius:4px;
-  }
-  .header h1 { font-size:22px; font-weight:700; letter-spacing:1px; }
-  .header-sub { font-size:12px; color:var(--text-muted); margin-top:4px; font-family: 'DM Mono'; }
-
-  /* 知識看板 */
+  /* 知識看板 - 獨立區塊 */
   .knowledge-card {
     background: var(--blue-dim); border: 1px solid var(--blue);
     border-radius: 12px; padding: 12px 16px; margin-bottom: 20px;
-    display: flex; gap: 12px; align-items: flex-start;
+    display: block; position: relative;
   }
-  .k-icon { font-size: 18px; }
-  .k-content { flex: 1; }
-  .k-title { font-size: 13px; font-weight: 700; color: var(--blue); margin-bottom: 4px; }
-  .k-text { font-size: 11px; color: var(--text-dim); line-height: 1.6; }
+  .k-title { font-size: 13px; font-weight: 700; color: var(--blue); margin-bottom: 4px; display: block; }
+  .k-text { font-size: 11px; color: var(--text-dim); line-height: 1.5; display: block; }
 
-  .period-bar {
-    background:var(--surface); border:1px solid var(--border);
-    border-radius:12px; padding:14px 20px; margin-bottom:24px;
-    display:flex; align-items:center; gap:12px;
-  }
-  .period-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+  /* 時段狀態 */
+  .period-bar { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px 18px; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+  .period-dot { width:10px; height:10px; border-radius:50%; background: #333; }
   .period-dot.open { background:var(--jcb-green); box-shadow:0 0 8px var(--jcb-green); animation:pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
   .period-status { font-size:13px; font-weight:500; }
-  .period-status.open { color:var(--jcb-green); }
 
-  .section-title { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px; padding-left:4px; }
+  .section-title { font-size:11px; color:var(--text-muted); margin-bottom:12px; letter-spacing:1px; }
 
-  /* 恢復原始卡片佈局 */
-  .cards-grid { display:grid; grid-template-columns:1fr; gap:12px; margin-bottom:28px; }
+  /* 原始卡片佈局 - 嚴格定位 */
+  .cards-grid { display: block; }
   .card {
-    background:var(--surface); border:1px solid var(--border);
-    border-radius:14px; padding:16px 18px;
-    position:relative; overflow:hidden;
+    background:var(--surface); border:1px solid var(--border); border-radius:14px;
+    padding:16px; margin-bottom:12px; position:relative; overflow:hidden; display: block;
   }
-  .card::before {
-    content:''; position:absolute; top:0; left:0;
-    width:3px; height:100%; background:var(--border);
-  }
-  .card.maxed::before        { background:var(--jcb-red); }
-  .card.monthly-done::before { background:var(--yellow); }
-  .card.open-window::before  { background:var(--jcb-green); }
+  .card::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--border); }
+  .card.maxed::before { background:var(--jcb-red); }
+  .card.open-window::before { background:var(--jcb-green); }
 
-  .card-top { display:flex; align-items:flex-start; gap:12px; margin-bottom:12px; }
-  .card-icon {
-    width:36px; height:36px; border-radius:8px;
-    display:flex; align-items:center; justify-content:center;
-    font-size:18px; flex-shrink:0; background:var(--surface2);
-  }
-  .card-meta { flex:1; }
-  .card-name { font-size:14px; font-weight:500; line-height:1.3; }
-  .card-bank { font-size:11px; color:var(--text-muted); margin-top:2px; }
+  .card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .card-icon { width:36px; height:36px; border-radius:8px; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:18px; }
+  .card-name { font-size:14px; font-weight:500; display: block; }
+  .card-bank { font-size:11px; color:var(--text-muted); display: block; }
 
-  .card-bottom { display:flex; align-items:center; justify-content:space-between; gap:8px; }
-  .pips { display:flex; gap:5px; align-items:center; }
-  .pip {
-    width:22px; height:22px; border-radius:50%; border:2px solid var(--border);
-    display:flex; align-items:center; justify-content:center; font-size:10px;
-  }
+  .card-bottom { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+  .pips { display: flex; gap: 6px; }
+  .pip { width:22px; height:22px; border-radius:50%; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; }
   .pip.used { background:var(--jcb-red); border-color:var(--jcb-red); color:#fff; }
 
   .btn-register {
-    flex:1; padding:9px 14px; border-radius:9px; border:none;
-    font-family:'Noto Sans TC',sans-serif; font-size:13px; font-weight:500;
-    cursor:pointer; transition:all .15s; text-align: center;
+    min-width: 100px; padding: 10px; border-radius: 9px; border: none;
+    font-size: 13px; font-weight: 600; cursor: pointer; text-align: center;
   }
-  .btn-register.can      { background:var(--jcb-green); color:#0d0f14; }
+  .btn-register.can { background:var(--jcb-green); color:#0d0f14; }
   .btn-register.disabled { background:var(--surface2); color:var(--text-muted); cursor:not-allowed; }
 
-  #toast {
-    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
-    background:var(--surface2); border:1px solid var(--border);
-    color:var(--text); padding:10px 20px; border-radius:30px;
-    font-size:13px; z-index:999; transition:transform .3s, opacity .3s;
-    opacity:0; pointer-events:none;
-  }
+  #toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--surface2); border:1px solid var(--border); padding:10px 20px; border-radius:30px; font-size:13px; z-index:999; transition:0.3s; opacity:0; }
   #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div class="header-logo">
-    <span class="jcb-badge">JCB</span>
-    <h1>登錄管家</h1>
-  </div>
+  <span class="jcb-badge">JCB</span>
+  <h1 id="main-title">登錄管家</h1>
   <div class="header-sub" id="current-date"></div>
 </div>
 
 <div class="knowledge-card" id="knowledge-card">
-  <div class="k-icon">💡</div>
-  <div class="k-content">
-    <div class="k-title" id="k-title">每日卡片小知識</div>
-    <div class="k-text" id="k-text">載入中...</div>
-  </div>
+  <span class="k-title" id="k-title">卡片知識</span>
+  <span class="k-text" id="k-text">載入中...</span>
 </div>
 
 <div class="period-bar">
@@ -158,7 +105,6 @@
 
 <div class="section-title">我的 JCB 卡片</div>
 <div class="cards-grid" id="cards-grid"></div>
-
 <div id="toast"></div>
 
 <script>
@@ -166,52 +112,32 @@ const CARDS = [
   { id:'federal_breezy', bank:'聯邦銀行', name:'微風 JCB', icon:'🌿' },
   { id:'federal_crane',  bank:'聯邦銀行', name:'吉鶴 JCB', icon:'🦢' },
   { id:'ctbc_lala',      bank:'中國信託', name:'LALAPORT JCB', icon:'🛍️' },
-  { id:'ctbc_muji',      bank:'中國信託', name:'無印良品 JCB', icon:'📦' },
-  { id:'ctbc_hanshen',   bank:'中國信託', name:'漢神百貨 JCB', icon:'🏬' },
   { id:'esun_kumamon',   bank:'玉山銀行', name:'熊本熊 JCB', icon:'🐻' },
   { id:'skb_easycard',   bank:'新光銀行', name:'新光悠遊 JCB', icon:'🚇' },
-  { id:'hua_red',        bank:'華南銀行', name:'寵愛紅卡 JCB', icon:'❤️' },
-  { id:'far_happy',      bank:'遠東銀行', name:'快樂卡 JCB', icon:'😊' },
   { id:'fubon_jcb',      bank:'富邦銀行', name:'JU卡紅 JCB', icon:'💳' }
 ];
 
 const KNOWLEDGE_BASE = [
-  { title: "2026 JCB 重要變更", text: "悠遊卡自動加值 10% 回饋今年改為「每卡每年限登錄 3 次」，建議保留給大額消費月份。" },
-  { title: "機場接送密技", text: "JCB 晶緻卡單筆消費滿 NT$30,000 可享免費機場接送，每月限量 1,000 趟，需提早搶預約。" },
-  { title: "日本店面回饋", text: "2026 年 JCB 在日本實體店面消費滿額享回饋，出國前記得官網確認並登錄活動。" },
-  { title: "星巴克半價", text: "每週一早上 10:30 開放領取序號，持卡至店面買指定飲品享半價。" },
-  { title: "自動加值小知識", text: "餘額低於 100 元會自動加值 500 元。這筆加值也算在信用卡的消費回饋內喔！" }
+  { title: "2026 JCB 新制", text: "悠遊卡自動加值 10% 回饋今年改為「每卡每年限登錄 3 次」，請保留給大額月份。" },
+  { title: "機場接送密技", text: "JCB 晶緻卡單筆滿 3 萬享免費接送，每月限量 1,000 趟，需提早搶約。" },
+  { title: "星巴克 50% 優惠", text: "每週一早上 10:30 開放領取序號，持卡至現場購買指定飲品享半價。" },
+  { title: "日本消費回饋", text: "2026 JCB 日本實體消費滿額享回饋，出國前請記得至官網登錄活動。" }
 ];
 
 const KEY = 'jcb_v4';
 let data = JSON.parse(localStorage.getItem(KEY)) || {};
 
-function showRandomKnowledge() {
-  const item = KNOWLEDGE_BASE[Math.floor(Math.random() * KNOWLEDGE_BASE.length)];
-  document.getElementById('k-title').textContent = item.title;
-  document.getElementById('k-text').textContent = item.text;
-}
-
-function updateOnlineStatus() {
-  document.body.classList.toggle('is-offline', !navigator.onLine);
-}
-window.addEventListener('online', updateOnlineStatus);
-window.addEventListener('offline', updateOnlineStatus);
-
-function getWeekday(date) {
-  return ["週日", "週一", "週二", "週三", "週四", "週五", "週六"][date.getDay()];
-}
+function getWeekday(date) { return ["週日", "週一", "週二", "週三", "週四", "週五", "週六"][date.getDay()]; }
 
 function render() {
   const t = new Date();
-  const dateStr = `${t.getFullYear()}/${t.getMonth()+1}/${t.getDate()} (${getWeekday(t)}) ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
-  document.getElementById('current-date').textContent = dateStr;
+  document.getElementById('current-date').textContent = `${t.getFullYear()}/${t.getMonth()+1}/${t.getDate()} (${getWeekday(t)}) ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
 
   const day = t.getDate();
   const isOpen = (day >= 1 && day <= 5) || (day >= 11 && day <= 15) || (day >= 21 && day <= 25);
   
   document.getElementById('period-status').textContent = isOpen ? "✓ 目前為登錄時段" : "✕ 目前非登錄時段";
-  document.getElementById('period-status').className = 'period-status ' + (isOpen ? 'open' : '');
+  document.getElementById('period-status').style.color = isOpen ? "var(--jcb-green)" : "var(--text-muted)";
   document.getElementById('period-dot').className = 'period-dot ' + (isOpen ? 'open' : '');
 
   document.getElementById('cards-grid').innerHTML = CARDS.map(c => {
@@ -223,33 +149,34 @@ function render() {
       <div class="card ${cls}">
         <div class="card-top">
           <div class="card-icon">${c.icon}</div>
-          <div class="card-meta"><div class="card-name">${c.name}</div><div class="card-bank">${c.bank}</div></div>
+          <div class="card-meta">
+            <span class="card-name">${c.name}</span>
+            <span class="card-bank">${c.bank}</span>
+          </div>
         </div>
         <div class="card-bottom">
-          <div class="pips">${[0,1,2].map(i => `<div class="pip ${i<list.length?'used':''}"></div>`).join('')}</div>
+          <div class="pips">
+            <div class="pip ${list.length>=1?'used':''}"></div>
+            <div class="pip ${list.length>=2?'used':''}"></div>
+            <div class="pip ${list.length>=3?'used':''}"></div>
+          </div>
           <button class="btn-register ${isOpen && !isMaxed ?'can':'disabled'}">
-            ${isMaxed ? '全年已滿' : (isOpen ? '確認登錄' : '待機中')}
+            ${isMaxed ? '已滿' : (isOpen ? '確認登錄' : '待機')}
           </button>
         </div>
       </div>`;
   }).join('');
 }
 
-function showToast(msg){
-  const el=document.getElementById('toast');
-  el.textContent=msg; el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'), 2500);
+function showRandomKnowledge() {
+  const item = KNOWLEDGE_BASE[Math.floor(Math.random() * KNOWLEDGE_BASE.length)];
+  document.getElementById('k-title').textContent = item.title;
+  document.getElementById('k-text').textContent = item.text;
 }
 
-// 初始化
-updateOnlineStatus();
 render();
 showRandomKnowledge();
 setInterval(render, 60000);
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js');
-}
 </script>
 </body>
 </html>
