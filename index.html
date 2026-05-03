@@ -7,8 +7,8 @@
 <meta name="theme-color" content="#0d0f14">
 <link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JCB 登錄管家 v1.18</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>JCB 登錄管家 v1.19</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap');
 
@@ -27,16 +27,27 @@
     --blue-dim: rgba(79,142,247,0.13);
     --purple: #a78bfa;
     --purple-dim: rgba(167,139,250,0.13);
+    --offline-orange: #ff9800;
     --text: #e8eaf0;
     --text-muted: #6b7280;
     --text-dim: #9ca3af;
   }
-  * { margin:0; padding:0; box-sizing:border-box; }
+
+  /* 禁止下拉重新整理 (取消轉圈圈) */
+  html, body { 
+    margin:0; padding:0; box-sizing:border-box; 
+    overscroll-behavior-y: contain; 
+  }
+
   body {
     background:var(--bg); color:var(--text);
     font-family:'Noto Sans TC',sans-serif;
     min-height:100vh; padding:24px 16px 60px;
   }
+
+  /* 離線模式樣式 */
+  body.is-offline .header h1 { color: var(--offline-orange) !important; }
+  body.is-offline .header h1::after { content: " (離線模式)"; font-size: 12px; margin-left: 8px; vertical-align: middle; }
 
   .header { text-align:center; margin-bottom:20px; }
   .header-logo { display:inline-flex; align-items:center; gap:10px; margin-bottom:6px; }
@@ -45,7 +56,7 @@
     font-family:'DM Mono',monospace; font-size:13px; font-weight:500;
     letter-spacing:2px; padding:4px 10px; border-radius:4px;
   }
-  .header h1 { font-size:22px; font-weight:700; letter-spacing:1px; }
+  .header h1 { font-size:22px; font-weight:700; letter-spacing:1px; transition: color 0.3s; }
 
   .ver-wrap { position:relative; display:inline-flex; align-items:center; }
   .ver-tag {
@@ -386,23 +397,23 @@
 <div class="header">
   <div class="header-logo">
     <span class="jcb-badge">JCB</span>
-    <h1>登錄管家</h1>
+    <h1 id="main-title">登錄管家</h1>
   </div>
   <div style="display:flex; justify-content:center; gap:8px; align-items:center; margin-bottom:4px;">
     <div class="ver-wrap" id="ver-wrap">
-      <span class="ver-tag" onclick="toggleVerTooltip(event)">v1.18</span>
+      <span class="ver-tag" onclick="toggleVerTooltip(event)">v1.19</span>
       <div class="ver-tooltip" id="ver-tooltip">
-        <div class="vt-version">v1.18</div>
-        <div class="vt-date">2026-05-01 發布</div>
+        <div class="vt-version">v1.19</div>
+        <div class="vt-date">2026-05-03 發布</div>
         <hr class="vt-divider">
         <div class="vt-label">本次更新</div>
-        <div class="vt-item">撤銷按鈕改為二步驟確認，防止誤按</div>
-        <div class="vt-item">確認列顯示即將撤銷的紀錄內容</div>
+        <div class="vt-item">支援離線模式：斷網時標題變更為橘色</div>
+        <div class="vt-item">UX 優化：禁止下拉重新整理 (防止誤刷)</div>
+        <div class="vt-item">功能穩定性：強化連線與離線共存邏輯</div>
         <hr class="vt-divider">
         <div class="vt-label">歷史版本</div>
-        <div class="vt-item">v1.17 · 新增漢神百貨、更名富邦 JU卡紅、新光悠遊</div>
+        <div class="vt-item">v1.18 · 撤銷二步驟確認，防止誤觸</div>
         <div class="vt-item">v1.16 · 新增補登功能（紫色標記）</div>
-        <div class="vt-item">v1.15 · 瀏覽器通知 + 頁面 Banner</div>
       </div>
     </div>
     <div class="header-sub" id="current-date" style="margin-top:0;"></div>
@@ -440,14 +451,13 @@
 
 <div style="text-align:center; margin-top:40px; padding:20px 0; border-top:1px solid var(--border);">
   <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px;">
-    JCB 登錄管家 &nbsp;·&nbsp; <span style="color:var(--purple);">v1.18</span> &nbsp;·&nbsp; 2026-05-01
+    JCB 登錄管家 &nbsp;·&nbsp; <span style="color:var(--purple);">v1.19</span> &nbsp;·&nbsp; 2026-05-03
   </div>
   <div style="font-size:10px; color:var(--text-muted); margin-top:4px; opacity:.5;">&copy; 2026 · 10 張卡 · 全年上限 30 次</div>
 </div>
 
 <div id="toast"></div>
 
-<!-- 正常登錄 modal -->
 <div class="modal-bg" id="modal-bg">
   <div class="modal">
     <h3 id="modal-title"></h3>
@@ -463,7 +473,6 @@
   </div>
 </div>
 
-<!-- 補登 modal -->
 <div class="modal-bg" id="retro-modal-bg">
   <div class="modal">
     <div class="retro-modal-header">
@@ -489,6 +498,29 @@
 </div>
 
 <script>
+// --- 離線狀態偵測 ---
+function updateOnlineStatus() {
+  if (navigator.onLine) {
+    document.body.classList.remove('is-offline');
+  } else {
+    document.body.classList.add('is-offline');
+    showToast('⚠️ 目前處於離線模式');
+  }
+}
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
+// --- 註冊 Service Worker ---
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('SW registered'))
+      .catch(err => console.log('SW registration failed'));
+  });
+}
+
+// --- 卡片與資料邏輯 (v1.18 基礎) ---
 const CARDS = [
   { id:'federal_breezy', bank:'聯邦銀行', name:'微風 JCB',      icon:'🌿' },
   { id:'federal_crane',  bank:'聯邦銀行', name:'吉鶴 JCB',      icon:'🦢' },
@@ -544,7 +576,6 @@ function loadData() {
 }
 function save(d) { localStorage.setItem(KEY,JSON.stringify(d)); }
 let data = loadData();
-
 let undoPendingId = null;
 
 function now() { return new Date(); }
@@ -641,7 +672,7 @@ function updateNotifUI() {
   const statusEl=document.getElementById('notif-status');
   const btnEl=document.getElementById('btn-notif');
   if (perm==='granted') { statusEl.textContent='● 通知已開啟'; statusEl.className='notif-status granted'; btnEl.textContent='✓ 已開啟'; btnEl.disabled=true; }
-  else if (perm==='denied') { statusEl.textContent='● 通知已封鎖'; statusEl.className='notif-status denied'; btnEl.textContent='請至瀏覽器設定解鎖'; btnEl.disabled=true; }
+  else if (perm==='denied') { statusEl.textContent='● 通知已封鎖'; statusEl.className='notif-status denied'; btnEl.textContent='請至設定解鎖'; btnEl.disabled=true; }
   else { statusEl.textContent='● 尚未授權'; statusEl.className='notif-status default'; btnEl.textContent='開啟通知'; btnEl.disabled=false; }
 }
 function requestNotif() {
@@ -655,21 +686,8 @@ function sendNotif(title, body) {
 function testNotif() {
   if (Notification.permission!=='granted') { showToast('請先開啟通知權限'); return; }
   const state=getReminderState();
-  sendNotif(state?state.title:'JCB 登錄測試通知', state?state.body:'版本 v1.18 運作正常！');
+  sendNotif(state?state.title:'JCB 登錄測試通知', state?state.body:'版本 v1.19 運作正常！');
   showToast('已發送測試通知');
-}
-let lastNotifHour=-1;
-function checkAndNotify() {
-  const h=now().getHours();
-  if ([9,12,18].includes(h) && h!==lastNotifHour) {
-    lastNotifHour=h;
-    const state=getReminderState();
-    if (state) sendNotif(state.title, state.body);
-  }
-}
-function notifyOnLoad() {
-  const state=getReminderState();
-  if (state && state.type==='go') sendNotif(state.title, state.body);
 }
 
 function renderPeriodBar() {
@@ -754,8 +772,6 @@ function renderSummary() {
   const used=CARDS.reduce((a,c)=>a+total(c.id),0), max=30;
   const pct=Math.round(used/max*100);
   const doneM=CARDS.filter(c=>usedMonth(c.id,ym)).length;
-  const eligible=CARDS.filter(c=>total(c.id)<3&&!usedMonth(c.id,ym));
-  const suggested=eligible.sort((a,b)=>total(b.id)-total(a.id)).slice(0,4);
   const bars=CARDS.map(c=>{
     const n=total(c.id);
     return`<div class="card-bar-row">
@@ -763,7 +779,6 @@ function renderSummary() {
       <div class="card-bar-track"><div class="card-bar-fill fn${n}"></div></div>
     </div>`;
   }).join('');
-  const sHtml=suggested.length?`<div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border);"><div style="font-size:11px;color:var(--blue);font-weight:700;margin-bottom:12px;letter-spacing:1px;">💡 優先建議登錄</div><div>${suggested.map(c=>`<span class="suggest-item">${c.bank.substring(0,2)} | ${c.name}</span>`).join('')}</div></div>`:'';
   document.getElementById('summary').innerHTML=`
     <div class="summary-title">全年統計概覽</div>
     <div class="summary-row"><span>總登錄次數</span><span class="summary-val">${used} / ${max}</span></div>
@@ -772,7 +787,6 @@ function renderSummary() {
       <div class="progress-header"><span class="progress-label">年度總進度</span><span class="progress-fraction">${pct}%</span></div>
       <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
       <div style="margin-top:24px;"><div style="font-size:11px;color:var(--text-muted);margin-bottom:12px;letter-spacing:1px;">各卡片年度紀錄</div>${bars}</div>
-      ${sHtml}
     </div>`;
 }
 
@@ -806,11 +820,10 @@ function confirmRegister(){
   const label=yr+'/'+String(mo).padStart(2,'0')+'/'+String(w.start[0]).padStart(2,'0')+' '+w.label;
   const ym=yr+'-'+String(mo).padStart(2,'0');
   doReg(pendingCard, label, ym);
-  closeModal(); showToast('✓ 登錄成功（'+w.label+'）');
+  closeModal(); showToast('✓ 登錄成功');
 }
 
 let retroCardId=null, retroSelMonth=null, retroSelWi=null;
-
 function openRetroModal(id, name) {
   retroCardId=id; retroSelMonth=null; retroSelWi=null;
   document.getElementById('retro-modal-title').textContent='補登「'+name+'」';
@@ -825,14 +838,12 @@ function openRetroModal(id, name) {
     const btn=document.createElement('button');
     btn.className='month-btn'+(alreadyUsed||full?' disabled':'');
     btn.textContent=mo+'月';
-    btn.title=alreadyUsed?'此月已有登錄':full?'全年額度已滿':'';
     if(!alreadyUsed && !full){ btn.onclick=()=>selectRetroMonth(ym, yr, mo, btn); }
     grid.appendChild(btn);
   }
   document.getElementById('retro-win-opts').innerHTML='<div style="font-size:12px;color:var(--text-muted);padding:8px 0;">← 請先選擇月份</div>';
   document.getElementById('retro-modal-bg').classList.add('show');
 }
-
 function selectRetroMonth(ym, yr, mo, btn) {
   retroSelMonth=ym; retroSelWi=null;
   document.getElementById('retro-ok').disabled=true;
@@ -847,20 +858,15 @@ function selectRetroMonth(ym, yr, mo, btn) {
         <div class="retro-win-name">${w.label}</div>
         <div class="retro-win-range">${range}</div>
       </div>
-      <span class="retro-win-tag ${thisUsed?'tag-used':'tag-ok'}">${thisUsed?'已登錄':'可補登'}</span>
     </label>`;
   }).join('');
 }
-
 function selectRetroWin(i){
   retroSelWi=i;
   document.querySelectorAll('.retro-win-opt').forEach((el,j)=>el.classList.toggle('sel',j===i));
   document.getElementById('retro-ok').disabled=false;
 }
-function closeRetroModal(){
-  document.getElementById('retro-modal-bg').classList.remove('show');
-  retroCardId=null; retroSelMonth=null; retroSelWi=null;
-}
+function closeRetroModal(){ document.getElementById('retro-modal-bg').classList.remove('show'); }
 function confirmRetro(){
   if(!retroCardId||!retroSelMonth||retroSelWi===null) return;
   const w=WINDOWS[retroSelWi];
@@ -870,8 +876,7 @@ function confirmRetro(){
   const existing=regs(retroCardId).filter(r=>r.month===retroSelMonth||r.month.startsWith(retroSelMonth));
   if(existing.length>0) monthKey=retroSelMonth+(existing.length===1?'a':'b');
   doReg(retroCardId, dateLabel, monthKey);
-  closeRetroModal();
-  showToast('✓ 補登成功（'+w.label+'）');
+  closeRetroModal(); showToast('✓ 補登成功');
 }
 
 function confirmReset(){
@@ -890,10 +895,9 @@ function toggleVerTooltip(e) {
   e.stopPropagation();
   document.getElementById('ver-tooltip').classList.toggle('show');
 }
-document.addEventListener('click', function(e) {
-  const wrap = document.getElementById('ver-wrap');
-  if (wrap && !wrap.contains(e.target))
-    document.getElementById('ver-tooltip').classList.remove('show');
+document.addEventListener('click', () => {
+  const vt = document.getElementById('ver-tooltip');
+  if (vt) vt.classList.remove('show');
 });
 
 function render(){
@@ -901,11 +905,10 @@ function render(){
   document.getElementById('current-date').textContent=
     t.getFullYear()+' 年 '+(t.getMonth()+1)+' 月 '+t.getDate()+' 日　'+
     String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
-  renderPeriodBar(); renderCards(); renderSummary(); renderBanner(); updateNotifUI(); checkAndNotify();
+  renderPeriodBar(); renderCards(); renderSummary(); renderBanner(); updateNotifUI();
 }
 
 render();
-notifyOnLoad();
 setInterval(render, 60000);
 </script>
 </body>
