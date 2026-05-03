@@ -8,7 +8,7 @@
 <link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>JCB 登錄管家 v1.20</title>
+<title>JCB 登錄管家 v1.21</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap');
 
@@ -31,21 +31,27 @@
     --text: #e8eaf0;
     --text-muted: #6b7280;
     --text-dim: #9ca3af;
+    /* 知識看板專屬 */
+    --teal: #2dd4bf;
+    --teal-dim: rgba(45,212,191,0.10);
+    --amber: #fb923c;
+    --amber-dim: rgba(251,146,60,0.11);
+    --pink: #f472b6;
+    --pink-dim: rgba(244,114,182,0.11);
+    --sky: #38bdf8;
+    --sky-dim: rgba(56,189,248,0.11);
   }
 
-  /* 禁止下拉重新整理 (取消轉圈圈) */
-  html, body { 
-    margin:0; padding:0; box-sizing:border-box; 
-    overscroll-behavior-y: contain; 
+  html, body {
+    margin:0; padding:0; box-sizing:border-box;
+    overscroll-behavior-y: contain;
   }
-
   body {
     background:var(--bg); color:var(--text);
     font-family:'Noto Sans TC',sans-serif;
     min-height:100vh; padding:24px 16px 60px;
   }
 
-  /* 離線模式樣式 */
   body.is-offline .header h1 { color: var(--offline-orange) !important; }
   body.is-offline .header h1::after { content: " (離線模式)"; font-size: 12px; margin-left: 8px; vertical-align: middle; }
 
@@ -93,6 +99,102 @@
 
   .header-sub { font-size:12px; color:var(--text-muted); margin-top:4px; font-family: 'DM Mono', monospace; }
 
+  /* =============================================
+     智慧知識看板
+  ============================================= */
+  .knowledge-panel {
+    border-radius:16px; padding:0; margin-bottom:20px;
+    position:relative; overflow:hidden;
+    border:1px solid var(--border);
+    background:var(--surface);
+  }
+
+  /* 頂部色帶 */
+  .knowledge-panel::before {
+    content:''; position:absolute; top:0; left:0; right:0;
+    height:3px;
+    background:linear-gradient(90deg, var(--kp-accent-start), var(--kp-accent-end));
+    transition:background 0.4s;
+  }
+
+  .kp-inner { padding:16px 18px 14px; }
+
+  .kp-header {
+    display:flex; align-items:center; gap:8px; margin-bottom:10px;
+  }
+  .kp-spark {
+    font-size:20px; line-height:1; flex-shrink:0;
+    filter: drop-shadow(0 0 6px var(--kp-glow));
+  }
+  .kp-label {
+    font-size:10px; letter-spacing:2px; text-transform:uppercase;
+    font-family:'DM Mono',monospace; font-weight:500;
+    flex:1;
+  }
+  .kp-tag {
+    font-size:10px; font-family:'DM Mono',monospace;
+    padding:2px 8px; border-radius:20px; border:1px solid;
+    white-space:nowrap;
+  }
+  .kp-shuffle {
+    width:28px; height:28px; border-radius:8px; border:1px solid var(--border);
+    background:var(--surface2); color:var(--text-muted); font-size:13px;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:all .15s; flex-shrink:0;
+  }
+  .kp-shuffle:hover { border-color:var(--purple); color:var(--purple); transform:rotate(20deg); }
+
+  .kp-title {
+    font-size:15px; font-weight:700; line-height:1.45; margin-bottom:8px;
+  }
+  .kp-body {
+    font-size:12px; color:var(--text-dim); line-height:1.8;
+  }
+  .kp-highlight {
+    display:inline-block; padding:1px 6px; border-radius:5px;
+    font-weight:600; font-size:11px;
+  }
+
+  .kp-divider { border:none; border-top:1px solid var(--border); margin:12px 0 10px; }
+
+  .kp-tips-label {
+    font-size:10px; color:var(--text-muted); letter-spacing:1px;
+    text-transform:uppercase; font-family:'DM Mono',monospace; margin-bottom:8px;
+  }
+  .kp-tips { display:flex; flex-wrap:wrap; gap:6px; }
+  .kp-tip-pill {
+    font-size:11px; padding:4px 10px; border-radius:20px;
+    border:1px solid var(--border); background:var(--surface2);
+    color:var(--text-dim); line-height:1.4; cursor:pointer; transition:all .15s;
+  }
+  .kp-tip-pill:hover { border-color:var(--purple); color:var(--purple); background:var(--purple-dim); }
+
+  .kp-footer {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-top:12px; padding-top:10px; border-top:1px solid var(--border);
+  }
+  .kp-dots { display:flex; gap:5px; }
+  .kp-dot {
+    width:6px; height:6px; border-radius:50%;
+    background:var(--border); transition:all .3s;
+  }
+  .kp-dot.active {
+    background:var(--kp-accent-start); width:16px; border-radius:3px;
+  }
+  .kp-counter {
+    font-family:'DM Mono',monospace; font-size:10px; color:var(--text-muted);
+  }
+
+  /* 淡入動畫 */
+  @keyframes kpSlideIn {
+    from { opacity:0; transform:translateY(6px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .kp-content-wrap { animation:kpSlideIn .28s ease; }
+
+  /* =============================================
+     其餘原版樣式（不動）
+  ============================================= */
   #reminder-banner {
     display:none; border-radius:12px; padding:14px 18px; margin-bottom:20px;
     border:1px solid; position:relative; overflow:hidden;
@@ -291,12 +393,6 @@
   .fn2 { width:66%; background:var(--yellow); }
   .fn3 { width:100%; background:var(--jcb-red); }
 
-  .suggest-item {
-    font-size:11px; color:var(--text); background:var(--surface2);
-    padding:4px 10px; border-radius:6px; margin:0 6px 6px 0;
-    display:inline-block; border:1px solid var(--border);
-  }
-
   #toast {
     position:fixed; bottom:24px; left:50%;
     transform:translateX(-50%) translateY(80px);
@@ -367,7 +463,7 @@
   .month-btn {
     padding:8px 4px; border-radius:8px; border:1.5px solid var(--border);
     background:var(--surface2); color:var(--text-muted); font-size:12px;
-    cursor:pointer; text-align:center; transition:all .15s;
+    cursor:pointer; text-align:center; transition:all .15px;
     font-family:'Noto Sans TC',sans-serif;
   }
   .month-btn:hover { border-color:var(--purple); color:var(--purple); }
@@ -401,21 +497,42 @@
   </div>
   <div style="display:flex; justify-content:center; gap:8px; align-items:center; margin-bottom:4px;">
     <div class="ver-wrap" id="ver-wrap">
-      <span class="ver-tag" onclick="toggleVerTooltip(event)">v1.20</span>
+      <span class="ver-tag" onclick="toggleVerTooltip(event)">v1.21</span>
       <div class="ver-tooltip" id="ver-tooltip">
-        <div class="vt-version">v1.20</div>
+        <div class="vt-version">v1.21</div>
         <div class="vt-date">2026-05-03 發布</div>
         <hr class="vt-divider">
         <div class="vt-label">本次更新</div>
-        <div class="vt-item">新增星期顯示功能</div>
-        <div class="vt-item">優化日期時間排版樣式</div>
+        <div class="vt-item">新增智慧知識看板</div>
+        <div class="vt-item">隨機信用卡極值技巧，每次開啟都不同</div>
         <hr class="vt-divider">
         <div class="vt-label">歷史版本</div>
+        <div class="vt-item">v1.20 · 新增星期顯示功能</div>
         <div class="vt-item">v1.19 · 支援離線模式、禁止下拉重新整理</div>
         <div class="vt-item">v1.18 · 撤銷二步驟確認，防止誤觸</div>
       </div>
     </div>
     <div class="header-sub" id="current-date" style="margin-top:0;"></div>
+  </div>
+</div>
+
+<!-- ★ 智慧知識看板 ★ -->
+<div class="knowledge-panel" id="knowledge-panel">
+  <div class="kp-inner">
+    <div class="kp-header">
+      <span class="kp-spark" id="kp-spark"></span>
+      <span class="kp-label" id="kp-label" style="color:var(--teal)"></span>
+      <span class="kp-tag" id="kp-tag"></span>
+      <button class="kp-shuffle" onclick="shuffleKnowledge()" title="換一則">⟳</button>
+    </div>
+    <div class="kp-content-wrap" id="kp-content-wrap">
+      <div class="kp-title" id="kp-title"></div>
+      <div class="kp-body" id="kp-body"></div>
+    </div>
+    <div class="kp-footer">
+      <div class="kp-dots" id="kp-dots"></div>
+      <div class="kp-counter" id="kp-counter"></div>
+    </div>
   </div>
 </div>
 
@@ -450,7 +567,7 @@
 
 <div style="text-align:center; margin-top:40px; padding:20px 0; border-top:1px solid var(--border);">
   <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px;">
-    JCB 登錄管家 &nbsp;·&nbsp; <span style="color:var(--purple);">v1.20</span> &nbsp;·&nbsp; 2026-05-03
+    JCB 登錄管家 &nbsp;·&nbsp; <span style="color:var(--purple);">v1.21</span> &nbsp;·&nbsp; 2026-05-03
   </div>
   <div style="font-size:10px; color:var(--text-muted); margin-top:4px; opacity:.5;">&copy; 2026 · 10 張卡 · 全年上限 30 次</div>
 </div>
@@ -497,7 +614,158 @@
 </div>
 
 <script>
-// --- 離線狀態偵測 ---
+// =============================================
+// 智慧知識看板資料庫
+// =============================================
+const KNOWLEDGE = [
+  {
+    theme: { label:'🚇 悠遊卡新制', tag:'登錄制度', accent:['#2dd4bf','#38bdf8'], glow:'#2dd4bf', bg:'var(--teal-dim)', border:'var(--teal)', tagColor:'var(--teal)' },
+    spark:'🚇',
+    title:'悠遊卡 10% 回饋：一年只有 3 次機會',
+    body:'新光悠遊 JCB（#skb_easycard）加入 JCB 登錄制後，每月登錄一次才能啟動<span class="kp-highlight" style="background:var(--teal-dim);color:var(--teal);">悠遊自動加值 10% 回饋</span>。全年上限 3 次，建議選第一期（1日）確保整月有效。'
+  },
+  {
+    theme: { label:'✈️ 機場接送', tag:'隱藏福利', accent:['#fb923c','#f59e0b'], glow:'#fb923c', bg:'var(--amber-dim)', border:'var(--amber)', tagColor:'var(--amber)' },
+    spark:'✈️',
+    title:'JCB 白金卡專屬：免費機場接送怎麼用？',
+    body:'多家銀行 JCB 白金等級提供每年 <span class="kp-highlight" style="background:var(--amber-dim);color:var(--amber);">2～4 次免費機場接送</span>。出發前 3 天預約，指定乘車區域、時段確認，返台回程同樣可用。注意：部分銀行需月費達門檻才計次，記得先查刷卡條件。'
+  },
+  {
+    theme: { label:'🗾 日本旅遊', tag:'境外回饋', accent:['#f472b6','#a78bfa'], glow:'#f472b6', bg:'var(--pink-dim)', border:'var(--pink)', tagColor:'var(--pink)' },
+    spark:'🗾',
+    title:'在日本刷 JCB：比 Visa/MC 多拿一倍',
+    body:'日本是 JCB 主場，ATM 提款、百貨消費甚至便利商店都有<span class="kp-highlight" style="background:var(--pink-dim);color:var(--pink);">日幣結算 2~3% 加碼</span>。搭配聯邦微風 / 玉山熊本熊的境外加碼，旅遊旺季出發前務必先完成當月登錄，境外刷卡效益最大化。'
+  },
+  {
+    theme: { label:'☕ 星巴克密技', tag:'生活回饋', accent:['#4f8ef7','#2dd4bf'], glow:'#4f8ef7', bg:'var(--blue-dim)', border:'var(--blue)', tagColor:'var(--blue)' },
+    spark:'☕',
+    title:'星巴克半價怎麼來的？JCB 聯名優惠拆解',
+    body:'中信 LALAPORT / 無印 JCB 在特定活動期間可享星巴克 <span class="kp-highlight" style="background:var(--blue-dim);color:var(--blue);">買一送一或 5 折</span>。關鍵步驟：① 先完成當月 JCB 登錄 ② 活動 App 綁定指定卡 ③ 結帳前先出示 App 再刷卡。順序不對就無法折抵，切記！'
+  },
+  {
+    theme: { label:'🏬 百貨回饋', tag:'購物優化', accent:['#a78bfa','#f472b6'], glow:'#a78bfa', bg:'var(--purple-dim)', border:'var(--purple)', tagColor:'var(--purple)' },
+    spark:'🏬',
+    title:'漢神百貨 JCB：週年慶衝刺最高 12%',
+    body:'中信漢神 JCB 在漢神百貨本館 & 巨蛋消費享基本回饋，搭配<span class="kp-highlight" style="background:var(--purple-dim);color:var(--purple);">週年慶登錄加碼最高 12%</span>。訣竅：週年慶前完成第三期登錄，確保活動當月回饋已啟動，加碼期間集中大額消費。'
+  },
+  {
+    theme: { label:'🐻 熊本熊卡', tag:'玉山限定', accent:['#2dd4bf','#00c97a'], glow:'#2dd4bf', bg:'var(--teal-dim)', border:'var(--teal)', tagColor:'var(--teal)' },
+    spark:'🐻',
+    title:'玉山熊本熊 JCB：指定通路無上限回饋',
+    body:'玉山熊本熊 JCB 在日本 JCB 特約店（包含全家 FamilyMart、唐吉訶德）享<span class="kp-highlight" style="background:var(--teal-dim);color:var(--teal);">境外最高 3.5% 回饋</span>。登錄完成後，境外消費不設單筆上限，長途旅行刷起來最划算。'
+  },
+  {
+    theme: { label:'💳 聯邦微風', tag:'百貨聯名', accent:['#38bdf8','#4f8ef7'], glow:'#38bdf8', bg:'var(--sky-dim)', border:'var(--sky)', tagColor:'var(--sky)' },
+    spark:'🌿',
+    title:'聯邦微風 JCB：微風廣場消費最高 5%',
+    body:'聯邦微風 JCB 在微風廣場全館（含超市）最高回饋 <span class="kp-highlight" style="background:var(--sky-dim);color:var(--sky);">5% 現金回饋</span>，每月登錄才能啟動。搭配微風聯名活動期間，加碼可疊加，建議購買高單價商品（精品、家電）時集中在登錄當月刷。'
+  },
+  {
+    theme: { label:'📦 無印良品', tag:'中信限定', accent:['#fb923c','#f5c842'], glow:'#fb923c', bg:'var(--amber-dim)', border:'var(--amber)', tagColor:'var(--amber)' },
+    spark:'📦',
+    title:'中信無印 JCB：在無印消費 5% 不手軟',
+    body:'中信無印 JCB 全台無印良品門市消費享 <span class="kp-highlight" style="background:var(--amber-dim);color:var(--amber);">5% 現金回饋</span>，年度大促（週年慶、黑色星期五）期間可疊加 MUJI 會員點數。登錄完成後，建議將無印大採購（棉被、家具）安排在該月一次完成，最大化回饋。'
+  },
+  {
+    theme: { label:'😊 遠東快樂卡', tag:'遠百加碼', accent:['#00c97a','#2dd4bf'], glow:'#00c97a', bg:'var(--jcb-green-dim)', border:'var(--jcb-green)', tagColor:'var(--jcb-green)' },
+    spark:'😊',
+    title:'遠東快樂卡 JCB：遠百 + 愛買雙重加碼',
+    body:'遠東快樂卡 JCB 在遠東百貨、愛買量販消費享基本 <span class="kp-highlight" style="background:var(--jcb-green-dim);color:var(--jcb-green);">3% + 登錄加碼</span>，Happy Go 點數同步累積可再折抵。訣竅：選週六「快樂購物日」集中刷，單日刷滿門檻額外觸發加碼，效益翻倍。'
+  },
+  {
+    theme: { label:'💳 富邦 JU卡紅', tag:'雙幣回饋', accent:['#e5001a','#fb923c'], glow:'#e5001a', bg:'var(--jcb-red-dim)', border:'var(--jcb-red)', tagColor:'var(--jcb-red)' },
+    spark:'💳',
+    title:'富邦 JU卡紅 JCB：國內外雙線並行',
+    body:'富邦 JU卡紅 JCB 國內外消費均享 <span class="kp-highlight" style="background:var(--jcb-red-dim);color:var(--jcb-red);">現金回饋不歸零</span>，全年累積無上限。完成登錄後，境外 JCB 特約店加碼最有感；搭配 JCB 台灣特約加油站優惠，日常加油也能持續累積。'
+  },
+  {
+    theme: { label:'🚇 新光悠遊', tag:'加值密技', accent:['#2dd4bf','#4f8ef7'], glow:'#2dd4bf', bg:'var(--teal-dim)', border:'var(--teal)', tagColor:'var(--teal)' },
+    spark:'🚇',
+    title:'悠遊自動加值 10%：設定一次終身受益',
+    body:'新光悠遊 JCB 只要設定<span class="kp-highlight" style="background:var(--teal-dim);color:var(--teal);">悠遊卡自動加值綁定此卡</span>，加值金額 10% 直接回饋現金。每月自動加值次數不限，但全年登錄上限 3 次，建議 1、5、9 月各登錄一次，確保全年效益不中斷。'
+  },
+  {
+    theme: { label:'❤️ 華南寵愛紅', tag:'女性專屬', accent:['#f472b6','#fb923c'], glow:'#f472b6', bg:'var(--pink-dim)', border:'var(--pink)', tagColor:'var(--pink)' },
+    spark:'❤️',
+    title:'華南寵愛紅 JCB：美妝、保健品回饋王',
+    body:'華南寵愛紅 JCB 在指定美妝、保健品通路（含屈臣氏、寶雅）享 <span class="kp-highlight" style="background:var(--pink-dim);color:var(--pink);">額外 2% 加碼</span>，搭配 JCB 登錄基本回饋可疊加。建議在年中促銷、雙11購買保養品大單，集中消費、同時觸發多項優惠。'
+  },
+  {
+    theme: { label:'🌟 登錄時機學', tag:'策略精華', accent:['#f5c842','#fb923c'], glow:'#f5c842', bg:'var(--yellow-dim)', border:'var(--yellow)', tagColor:'var(--yellow)' },
+    spark:'🌟',
+    title:'登錄時段選哪期最划算？策略全解析',
+    body:'三個登錄期（1–5日、11–15日、21–25日）效果相同，但<span class="kp-highlight" style="background:var(--yellow-dim);color:var(--yellow);">第一期（1日開搶）</span>最推薦：整月消費都在登錄效益內，且月初刷卡習慣容易固定。若該月有大型購物節（雙11、週年慶），務必提前在第三期完成登錄。'
+  },
+  {
+    theme: { label:'🗾 JCB 境外', tag:'海外最強', accent:['#f472b6','#a78bfa'], glow:'#f472b6', bg:'var(--pink-dim)', border:'var(--pink)', tagColor:'var(--pink)' },
+    spark:'🗗',
+    title:'日本 JCB 特約店清單：哪些地方多賺？',
+    body:'日本全家便利商店、唐吉訶德、松本清藥妝、大塚家具均為 JCB 特約加碼店。<span class="kp-highlight" style="background:var(--pink-dim);color:var(--pink);">玉山熊本熊 JCB 在這些地方最高 3.5%</span>，加上消費日圓結算手續費較低，是日旅首選。出發前記得完成當月登錄，到日本第一筆就能啟動。'
+  },
+  {
+    theme: { label:'💡 最大化技巧', tag:'終極密技', accent:['#a78bfa','#4f8ef7'], glow:'#a78bfa', bg:'var(--purple-dim)', border:'var(--purple)', tagColor:'var(--purple)' },
+    spark:'💡',
+    title:'10 張卡全部登錄：效益最大化行動計畫',
+    body:'每月第一期（1–5日）是黃金窗口。建議固定每月 <span class="kp-highlight" style="background:var(--purple-dim);color:var(--purple);">1 號早上 9:01</span> 打開本 App，一次完成所有可登錄卡片，全年 30 次用盡，月均享受最多 10 張卡的完整回饋。搭配行事曆提醒，不再漏登。'
+  },
+];
+
+let kpIndex = Math.floor(Math.random() * KNOWLEDGE.length);
+
+function applyKnowledgeTheme(k) {
+  const panel = document.getElementById('knowledge-panel');
+  const t = k.theme;
+  panel.style.setProperty('--kp-accent-start', t.accent[0]);
+  panel.style.setProperty('--kp-accent-end',   t.accent[1]);
+  panel.style.setProperty('--kp-glow',          t.glow);
+}
+
+function renderKnowledge(idx) {
+  const k = KNOWLEDGE[idx];
+  applyKnowledgeTheme(k);
+
+  document.getElementById('kp-spark').textContent = k.spark;
+  const labelEl = document.getElementById('kp-label');
+  labelEl.textContent = k.theme.label;
+  labelEl.style.color = k.theme.tagColor;
+
+  const tagEl = document.getElementById('kp-tag');
+  tagEl.textContent = k.theme.tag;
+  tagEl.style.color = k.theme.tagColor;
+  tagEl.style.borderColor = k.theme.tagColor;
+  tagEl.style.background = k.theme.bg;
+
+  // 重建 content-wrap 觸發動畫
+  const wrap = document.getElementById('kp-content-wrap');
+  wrap.style.animation = 'none';
+  wrap.offsetHeight; // reflow
+  wrap.style.animation = '';
+
+  document.getElementById('kp-title').textContent = k.title;
+  document.getElementById('kp-body').innerHTML = k.body;
+
+  // dots
+  const dotsEl = document.getElementById('kp-dots');
+  const DOTS_SHOW = 5;
+  let dotsHTML = '';
+  for (let i = 0; i < DOTS_SHOW; i++) {
+    dotsHTML += `<div class="kp-dot${i === (idx % DOTS_SHOW) ? ' active' : ''}"></div>`;
+  }
+  dotsEl.innerHTML = dotsHTML;
+  dotsEl.style.setProperty('--kp-accent-start', k.theme.accent[0]);
+
+  document.getElementById('kp-counter').textContent = (idx + 1) + ' / ' + KNOWLEDGE.length;
+}
+
+function shuffleKnowledge() {
+  const prev = kpIndex;
+  do { kpIndex = Math.floor(Math.random() * KNOWLEDGE.length); } while (kpIndex === prev && KNOWLEDGE.length > 1);
+  renderKnowledge(kpIndex);
+}
+
+// =============================================
+// 離線狀態偵測
+// =============================================
 function updateOnlineStatus() {
   if (navigator.onLine) {
     document.body.classList.remove('is-offline');
@@ -510,7 +778,6 @@ window.addEventListener('online', updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 updateOnlineStatus();
 
-// --- 註冊 Service Worker ---
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
@@ -519,7 +786,9 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// --- 卡片與資料邏輯 ---
+// =============================================
+// 卡片與資料邏輯（原版不動）
+// =============================================
 const CARDS = [
   { id:'federal_breezy', bank:'聯邦銀行', name:'微風 JCB',      icon:'🌿' },
   { id:'federal_crane',  bank:'聯邦銀行', name:'吉鶴 JCB',      icon:'🦢' },
@@ -685,7 +954,7 @@ function sendNotif(title, body) {
 function testNotif() {
   if (Notification.permission!=='granted') { showToast('請先開啟通知權限'); return; }
   const state=getReminderState();
-  sendNotif(state?state.title:'JCB 登錄測試通知', state?state.body:'版本 v1.20 運作正常！');
+  sendNotif(state?state.title:'JCB 登錄測試通知', state?state.body:'版本 v1.21 運作正常！');
   showToast('已發送測試通知');
 }
 
@@ -903,14 +1172,14 @@ function render(){
   const t=now();
   const weekDays = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
   const dayName = weekDays[t.getDay()];
-
-  document.getElementById('current-date').textContent = 
+  document.getElementById('current-date').textContent =
     t.getFullYear() + ' 年 ' + (t.getMonth() + 1) + ' 月 ' + t.getDate() + ' 日 (' + dayName + ') ' +
     String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
-
   renderPeriodBar(); renderCards(); renderSummary(); renderBanner(); updateNotifUI();
 }
 
+// 初始化知識看板（只在載入時隨機一次）
+renderKnowledge(kpIndex);
 render();
 setInterval(render, 60000);
 </script>
