@@ -1,438 +1,1187 @@
-<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/><title>信用卡繳款管理</title><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet"/><style>html{background:#0a0c10;overscroll-behavior-y:none}body{background:#0a0c10;color:#e2e8f0;font-family:'Noto Sans TC',sans-serif;margin:0;padding:0;min-height:100vh;overscroll-behavior-y:none}#app{width:100%;min-height:100vh}*{box-sizing:border-box;margin:0;padding:0}.card{background:#111318;border:1px solid #1e2330;border-radius:12px;margin-bottom:14px}.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}.stat-card{background:#0e1117;border:1px solid #1e2330;border-radius:10px;padding:14px}.wave-btn{border:1px solid #1e2330;background:#111318;color:#64748b;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:inherit}.wave-btn.active{background:#1e293b;border-color:#3b82f6;color:#60a5fa}.row{border-bottom:1px solid #1a1f2e;padding:11px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.row:last-child{border-bottom:none}.avatar{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}.chip{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500}.manual{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25)}.auto{background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.2)}.w1{background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.2);border-radius:6px}.w2{background:rgba(96,165,250,.1);color:#60a5fa;border:1px solid rgba(96,165,250,.2);border-radius:6px}.w3{background:rgba(167,139,250,.1);color:#a78bfa;border:1px solid rgba(167,139,250,.2);border-radius:6px}.pulse{animation:pulse 2s infinite}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}.banner{position:fixed;top:12px;left:50%;transform:translateX(-50%);background:#052e16;border:1px solid rgba(52,211,153,.3);color:#34d399;padding:9px 16px;border-radius:10px;font-size:12px;z-index:999;white-space:nowrap}.offline-banner{background:#450a0a!important;color:#f87171!important;border-color:rgba(239,68,68,0.3)!important}.due-info{color:#a78bfa;font-size:13px;margin-top:4px;font-weight:500}.cbtn{border:1px solid #334155;background:none;color:#64748b;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:inherit;margin-top:4px}.cbtn.done{background:rgba(52,211,153,.1);color:#34d399;border-color:rgba(52,211,153,.3)}.cbtn.cancel{background:rgba(239,68,68,.08);color:#f87171;border-color:rgba(239,68,68,.2);margin-top:4px}.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px}.modal{background:#111318;border:1px solid #1e2330;border-radius:16px;padding:24px;width:100%;max-width:320px;text-align:center}.version-badge{display:inline-flex;align-items:center;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.3);color:#818cf8;border-radius:20px;padding:2px 10px;font-size:10px;font-weight:600;letter-spacing:.5px;cursor:pointer}.notif-panel{background:#0e1117;border:1px solid #1e2330;border-radius:12px;margin-bottom:14px;overflow:hidden}.notif-panel-header{padding:12px 14px;border-bottom:1px solid #1a1f2e;display:flex;align-items:center;justify-content:space-between}.notif-item{padding:10px 14px;border-bottom:1px solid #1a1f2e;display:flex;align-items:center;gap:10px}.notif-item:last-child{border-bottom:none}.notif-item.urgent{background:rgba(239,68,68,.04)}.notif-item.today{background:rgba(251,191,36,.04)}.notif-item.soon{background:rgba(96,165,250,.03)}.notif-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}.notif-dot.red{background:#ef4444}.notif-dot.yellow{background:#fbbf24}.notif-dot.blue{background:#3b82f6}.dismiss-btn{background:none;border:1px solid #1e2330;color:#475569;border-radius:6px;padding:3px 8px;cursor:pointer;font-size:10px;font-family:inherit;flex-shrink:0}.tab-nav{display:flex;gap:4px;padding:10px 16px;border-top:1px solid #1e2330;background:#0a0c10;position:fixed;bottom:0;left:0;right:0;z-index:100;justify-content:center}.tab-btn{padding:9px 32px;border-radius:10px;border:1px solid #1e2330;background:none;color:#64748b;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}.tab-btn.active{background:#1e293b;border-color:#3b82f6;color:#60a5fa}.page-content{padding-bottom:100px}.sheet-table{width:100%;border-collapse:collapse;font-size:12px}.sheet-table th{background:#0e1117;color:#475569;font-size:10px;font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid #1e2330;letter-spacing:.5px}.sheet-table td{padding:9px 12px;border-bottom:1px solid #1a1f2e;color:#94a3b8;vertical-align:middle}.sheet-table tr:last-child td{border-bottom:none}.month-header{background:#0e1117;border:1px solid #1e2330;border-radius:10px;margin-bottom:10px;overflow:hidden}.month-header-title{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}.wave3-done-banner{background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.2);border-radius:10px;padding:14px;margin-bottom:14px;display:flex;align-items:center;gap:12px}.reset-info-bar{background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:12px;color:#60a5fa}</style></head><body>
-<div id="app"></div>
-<div id="modal-root"></div>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d0f14">
+<link rel="manifest" href="manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>JCB 登錄管家 v1.21</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #161920;
+    --surface2: #1e2230;
+    --border: #2a2f3d;
+    --jcb-red: #e5001a;
+    --jcb-red-dim: rgba(229,0,26,0.15);
+    --jcb-green: #00c97a;
+    --jcb-green-dim: rgba(0,201,122,0.12);
+    --yellow: #f5c842;
+    --yellow-dim: rgba(245,200,66,0.12);
+    --blue: #4f8ef7;
+    --blue-dim: rgba(79,142,247,0.13);
+    --purple: #a78bfa;
+    --purple-dim: rgba(167,139,250,0.13);
+    --offline-orange: #ff9800;
+    --text: #e8eaf0;
+    --text-muted: #6b7280;
+    --text-dim: #9ca3af;
+    /* 知識看板專屬 */
+    --teal: #2dd4bf;
+    --teal-dim: rgba(45,212,191,0.10);
+    --amber: #fb923c;
+    --amber-dim: rgba(251,146,60,0.11);
+    --pink: #f472b6;
+    --pink-dim: rgba(244,114,182,0.11);
+    --sky: #38bdf8;
+    --sky-dim: rgba(56,189,248,0.11);
+  }
+
+  html, body {
+    margin:0; padding:0; box-sizing:border-box;
+    overscroll-behavior-y: contain;
+  }
+  body {
+    background:var(--bg); color:var(--text);
+    font-family:'Noto Sans TC',sans-serif;
+    min-height:100vh; padding:24px 16px 60px;
+  }
+
+  body.is-offline .header h1 { color: var(--offline-orange) !important; }
+  body.is-offline .header h1::after { content: " (離線模式)"; font-size: 12px; margin-left: 8px; vertical-align: middle; }
+
+  .header { text-align:center; margin-bottom:20px; }
+  .header-logo { display:inline-flex; align-items:center; gap:10px; margin-bottom:6px; }
+  .jcb-badge {
+    background:var(--jcb-red); color:#fff;
+    font-family:'DM Mono',monospace; font-size:13px; font-weight:500;
+    letter-spacing:2px; padding:4px 10px; border-radius:4px;
+  }
+  .header h1 { font-size:22px; font-weight:700; letter-spacing:1px; transition: color 0.3s; }
+
+  .ver-wrap { position:relative; display:inline-flex; align-items:center; }
+  .ver-tag {
+    font-family:'DM Mono',monospace; font-size:10px;
+    background:var(--purple-dim); color:var(--purple);
+    padding:3px 8px; border-radius:20px; border:1px solid var(--purple);
+    cursor:pointer; user-select:none; transition:background .15s;
+    display:inline-flex; align-items:center; gap:4px;
+  }
+  .ver-tag:hover { background:rgba(167,139,250,0.22); }
+  .ver-tag::before { content:'◆'; font-size:7px; }
+  .ver-tooltip {
+    display:none; position:absolute; top:calc(100% + 8px); left:50%;
+    transform:translateX(-50%);
+    background:var(--surface); border:1px solid var(--purple);
+    border-radius:12px; padding:14px 16px; min-width:220px;
+    box-shadow:0 8px 32px rgba(0,0,0,.5);
+    z-index:200; text-align:left;
+  }
+  .ver-tooltip::before {
+    content:''; position:absolute; top:-6px; left:50%;
+    width:10px; height:10px; background:var(--surface);
+    border-left:1px solid var(--purple); border-top:1px solid var(--purple);
+    transform:translateX(-50%) rotate(45deg);
+  }
+  .ver-tooltip.show { display:block; animation:fadeIn .15s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateX(-50%) translateY(-4px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+  .vt-version { font-family:'DM Mono',monospace; font-size:18px; font-weight:700; color:var(--purple); margin-bottom:2px; }
+  .vt-date { font-size:10px; color:var(--text-muted); font-family:'DM Mono',monospace; margin-bottom:10px; }
+  .vt-divider { border:none; border-top:1px solid var(--border); margin:8px 0; }
+  .vt-label { font-size:10px; color:var(--purple); letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; font-weight:600; }
+  .vt-item { font-size:11px; color:var(--text-dim); line-height:1.7; padding-left:10px; position:relative; }
+  .vt-item::before { content:'·'; position:absolute; left:0; color:var(--purple); }
+
+  .header-sub { font-size:12px; color:var(--text-muted); margin-top:4px; font-family: 'DM Mono', monospace; }
+
+  /* =============================================
+     智慧知識看板
+  ============================================= */
+  .knowledge-panel {
+    border-radius:16px; padding:0; margin-bottom:20px;
+    position:relative; overflow:hidden;
+    border:1px solid var(--border);
+    background:var(--surface);
+  }
+
+  /* 頂部色帶 */
+  .knowledge-panel::before {
+    content:''; position:absolute; top:0; left:0; right:0;
+    height:3px;
+    background:linear-gradient(90deg, var(--kp-accent-start), var(--kp-accent-end));
+    transition:background 0.4s;
+  }
+
+  .kp-inner { padding:16px 18px 14px; }
+
+  .kp-header {
+    display:flex; align-items:center; gap:8px; margin-bottom:10px;
+  }
+  .kp-spark {
+    font-size:20px; line-height:1; flex-shrink:0;
+    filter: drop-shadow(0 0 6px var(--kp-glow));
+  }
+  .kp-label {
+    font-size:10px; letter-spacing:2px; text-transform:uppercase;
+    font-family:'DM Mono',monospace; font-weight:500;
+    flex:1;
+  }
+  .kp-tag {
+    font-size:10px; font-family:'DM Mono',monospace;
+    padding:2px 8px; border-radius:20px; border:1px solid;
+    white-space:nowrap;
+  }
+  .kp-shuffle {
+    width:28px; height:28px; border-radius:8px; border:1px solid var(--border);
+    background:var(--surface2); color:var(--text-muted); font-size:13px;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:all .15s; flex-shrink:0;
+  }
+  .kp-shuffle:hover { border-color:var(--purple); color:var(--purple); transform:rotate(20deg); }
+
+  .kp-title {
+    font-size:15px; font-weight:700; line-height:1.45; margin-bottom:8px;
+  }
+  .kp-body {
+    font-size:12px; color:var(--text-dim); line-height:1.8;
+  }
+  .kp-highlight {
+    display:inline-block; padding:1px 6px; border-radius:5px;
+    font-weight:600; font-size:11px;
+  }
+
+  .kp-divider { border:none; border-top:1px solid var(--border); margin:12px 0 10px; }
+
+  .kp-tips-label {
+    font-size:10px; color:var(--text-muted); letter-spacing:1px;
+    text-transform:uppercase; font-family:'DM Mono',monospace; margin-bottom:8px;
+  }
+  .kp-tips { display:flex; flex-wrap:wrap; gap:6px; }
+  .kp-tip-pill {
+    font-size:11px; padding:4px 10px; border-radius:20px;
+    border:1px solid var(--border); background:var(--surface2);
+    color:var(--text-dim); line-height:1.4; cursor:pointer; transition:all .15s;
+  }
+  .kp-tip-pill:hover { border-color:var(--purple); color:var(--purple); background:var(--purple-dim); }
+
+  .kp-footer {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-top:12px; padding-top:10px; border-top:1px solid var(--border);
+  }
+  .kp-dots { display:flex; gap:5px; }
+  .kp-dot {
+    width:6px; height:6px; border-radius:50%;
+    background:var(--border); transition:all .3s;
+  }
+  .kp-dot.active {
+    background:var(--kp-accent-start); width:16px; border-radius:3px;
+  }
+  .kp-counter {
+    font-family:'DM Mono',monospace; font-size:10px; color:var(--text-muted);
+  }
+
+  /* 淡入動畫 */
+  @keyframes kpSlideIn {
+    from { opacity:0; transform:translateY(6px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .kp-content-wrap { animation:kpSlideIn .28s ease; }
+
+  /* =============================================
+     其餘原版樣式（不動）
+  ============================================= */
+  #reminder-banner {
+    display:none; border-radius:12px; padding:14px 18px; margin-bottom:20px;
+    border:1px solid; position:relative; overflow:hidden;
+  }
+  #reminder-banner.warn { background:var(--yellow-dim); border-color:var(--yellow); }
+  #reminder-banner.go   { background:var(--jcb-green-dim); border-color:var(--jcb-green); }
+  #reminder-banner.info { background:var(--blue-dim); border-color:var(--blue); }
+  .banner-icon { font-size:20px; margin-bottom:4px; }
+  .banner-title { font-size:14px; font-weight:700; margin-bottom:4px; }
+  #reminder-banner.warn .banner-title { color:var(--yellow); }
+  #reminder-banner.go   .banner-title { color:var(--jcb-green); }
+  #reminder-banner.info .banner-title { color:var(--blue); }
+  .banner-body { font-size:12px; color:var(--text-dim); line-height:1.7; }
+  .banner-close {
+    position:absolute; top:10px; right:12px;
+    background:none; border:none; color:var(--text-muted);
+    font-size:16px; cursor:pointer; line-height:1;
+  }
+
+  .notif-bar {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:10px; padding:12px 16px; margin-bottom:20px;
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  }
+  .notif-bar-label { font-size:12px; color:var(--text-muted); flex:1; }
+  .notif-status { font-size:11px; font-family:'DM Mono',monospace; }
+  .notif-status.granted { color:var(--jcb-green); }
+  .notif-status.denied  { color:var(--jcb-red); }
+  .notif-status.default { color:var(--yellow); }
+  .btn-notif {
+    padding:7px 14px; border-radius:8px; border:1px solid var(--border);
+    background:var(--surface2); color:var(--text); font-size:12px;
+    cursor:pointer; font-family:'Noto Sans TC',sans-serif; transition:all .15s; white-space:nowrap;
+  }
+  .btn-notif:hover { border-color:var(--blue); color:var(--blue); }
+  .btn-test-notif {
+    padding:7px 14px; border-radius:8px; border:1px solid var(--border);
+    background:transparent; color:var(--text-muted); font-size:12px;
+    cursor:pointer; font-family:'Noto Sans TC',sans-serif; transition:all .15s; white-space:nowrap;
+  }
+  .btn-test-notif:hover { border-color:var(--jcb-green); color:var(--jcb-green); }
+
+  .period-bar {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:14px 20px; margin-bottom:24px;
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  }
+  .period-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; animation:pulse 2s infinite; }
+  .period-dot.open  { background:var(--jcb-green); box-shadow:0 0 8px var(--jcb-green); }
+  .period-dot.closed{ background:var(--text-muted); animation:none; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+  .period-info { flex:1; }
+  .period-status { font-size:13px; font-weight:500; }
+  .period-status.open   { color:var(--jcb-green); }
+  .period-status.closed { color:var(--text-muted); }
+  .period-next { font-size:11px; color:var(--text-muted); margin-top:2px; }
+  .period-countdown {
+    font-family:'DM Mono',monospace; font-size:12px;
+    color:var(--yellow); background:var(--yellow-dim); padding:4px 10px; border-radius:6px;
+  }
+  .period-windows { width:100%; display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  .pw {
+    flex:1; min-width:110px; background:var(--surface2); border:1px solid var(--border);
+    border-radius:8px; padding:8px 10px; font-size:11px; color:var(--text-muted); text-align:center;
+  }
+  .pw.active { border-color:var(--jcb-green); color:var(--jcb-green); background:var(--jcb-green-dim); }
+  .pw-label { font-weight:500; margin-bottom:2px; }
+
+  .section-title {
+    font-size:11px; letter-spacing:2px; text-transform:uppercase;
+    color:var(--text-muted); margin-bottom:12px; padding-left:4px;
+  }
+
+  .cards-grid { display:grid; grid-template-columns:1fr; gap:12px; margin-bottom:28px; }
+  .card {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:14px; padding:16px 18px;
+    transition:border-color .2s; position:relative; overflow:hidden;
+  }
+  .card::before {
+    content:''; position:absolute; top:0; left:0;
+    width:3px; height:100%; background:var(--border); transition:background .2s;
+  }
+  .card.maxed::before        { background:var(--jcb-red); }
+  .card.monthly-done::before { background:var(--yellow); }
+  .card.open-window::before  { background:var(--jcb-green); }
+
+  .card-top { display:flex; align-items:flex-start; gap:12px; margin-bottom:12px; }
+  .card-icon {
+    width:36px; height:36px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:18px; flex-shrink:0; background:var(--surface2);
+  }
+  .card-meta { flex:1; }
+  .card-name { font-size:14px; font-weight:500; line-height:1.3; }
+  .card-bank { font-size:11px; color:var(--text-muted); margin-top:2px; }
+
+  .pips { display:flex; gap:5px; align-items:center; }
+  .pip {
+    width:22px; height:22px; border-radius:50%; border:2px solid var(--border);
+    display:flex; align-items:center; justify-content:center; font-size:10px; transition:all .15s;
+  }
+  .pip.used { background:var(--jcb-red); border-color:var(--jcb-red); color:#fff; }
+  .pip-count { font-size:10px; color:var(--text-muted); margin-left:6px; font-family:'DM Mono',monospace; }
+
+  .card-status { font-size:11px; font-weight:500; padding:3px 8px; border-radius:20px; white-space:nowrap; flex-shrink:0; }
+  .badge-maxed   { background:var(--jcb-red-dim); color:var(--jcb-red); }
+  .badge-monthly { background:var(--yellow-dim);  color:var(--yellow); }
+  .badge-ok      { background:var(--jcb-green-dim); color:var(--jcb-green); }
+  .badge-closed  { background:rgba(107,114,128,.15); color:var(--text-muted); }
+
+  .card-bottom { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .btn-register {
+    flex:1; padding:9px 14px; border-radius:9px; border:none;
+    font-family:'Noto Sans TC',sans-serif; font-size:13px; font-weight:500;
+    cursor:pointer; transition:all .15s;
+  }
+  .btn-register.can      { background:var(--jcb-green); color:#0d0f14; }
+  .btn-register.can:hover{ background:#00e688; transform:translateY(-1px); }
+  .btn-register.disabled { background:var(--surface2); color:var(--text-muted); cursor:not-allowed; }
+
+  .btn-retro {
+    padding:9px 11px; border-radius:9px; border:1px solid var(--purple);
+    background:var(--purple-dim); color:var(--purple); font-size:12px;
+    cursor:pointer; transition:all .15s; white-space:nowrap;
+    font-family:'Noto Sans TC',sans-serif; font-weight:500;
+  }
+  .btn-retro:hover { background:rgba(167,139,250,0.22); }
+
+  .btn-undo {
+    padding:9px 10px; border-radius:9px; border:1px solid var(--border);
+    background:transparent; color:var(--text-muted); font-size:12px;
+    cursor:pointer; transition:all .15s; white-space:nowrap;
+    font-family:'Noto Sans TC',sans-serif;
+  }
+  .btn-undo:hover { border-color:var(--jcb-red); color:var(--jcb-red); }
+  .btn-undo.pending {
+    border-color:var(--jcb-red); color:var(--jcb-red);
+    background:var(--jcb-red-dim);
+  }
+
+  .undo-confirm-bar {
+    display:flex; align-items:center; gap:8px;
+    background:var(--jcb-red-dim); border:1px solid var(--jcb-red);
+    border-radius:10px; padding:10px 14px; margin-top:10px;
+    animation:slideDown .18s ease;
+  }
+  @keyframes slideDown {
+    from { opacity:0; transform:translateY(-6px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .undo-confirm-text { flex:1; font-size:12px; color:var(--jcb-red); font-weight:500; }
+  .undo-confirm-sub { font-size:10px; color:var(--text-muted); font-family:'DM Mono',monospace; margin-top:2px; }
+  .btn-undo-yes {
+    padding:7px 14px; border-radius:8px; border:none;
+    background:var(--jcb-red); color:#fff; font-size:12px; font-weight:600;
+    cursor:pointer; font-family:'Noto Sans TC',sans-serif; transition:all .15s; white-space:nowrap;
+  }
+  .btn-undo-yes:hover { background:#ff1f36; }
+  .btn-undo-no {
+    padding:7px 12px; border-radius:8px; border:1px solid var(--border);
+    background:transparent; color:var(--text-muted); font-size:12px;
+    cursor:pointer; font-family:'Noto Sans TC',sans-serif; transition:all .15s; white-space:nowrap;
+  }
+  .btn-undo-no:hover { border-color:var(--text-dim); color:var(--text); }
+
+  .log-entry { font-size:11px; color:var(--text-muted); margin-top:8px; font-family:'DM Mono',monospace; line-height:1.9; }
+  .log-retro { color: var(--purple) !important; }
+
+  .summary { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 20px; }
+  .summary-title { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px; }
+  .summary-row { display:flex; justify-content:space-between; font-size:12px; color:var(--text-dim); margin-bottom:6px; }
+  .summary-val { font-family:'DM Mono',monospace; color:var(--text); }
+
+  .progress-section { margin-top:18px; padding-top:16px; border-top:1px solid var(--border); }
+  .progress-header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+  .progress-label { font-size:12px; color:var(--text-dim); font-weight:500; }
+  .progress-fraction { font-family:'DM Mono',monospace; font-size:13px; color:var(--text); }
+  .progress-track { height:10px; background:var(--surface2); border-radius:99px; overflow:hidden; margin-bottom:5px; }
+  .progress-fill {
+    height:100%; border-radius:99px;
+    background:linear-gradient(90deg,#00c97a,#00e688);
+    transition:width .7s cubic-bezier(.4,0,.2,1); position:relative;
+  }
+  .progress-fill::after {
+    content:''; position:absolute; right:0; top:0;
+    width:6px; height:100%; background:rgba(255,255,255,.3); border-radius:99px;
+  }
+
+  .card-bar-row { margin-bottom:12px; }
+  .card-bar-name { font-size:11px; color:var(--text-dim); display:flex; justify-content:space-between; margin-bottom:4px; width:100%; }
+  .card-bar-track { height:6px; background:var(--surface2); border-radius:99px; overflow:hidden; }
+  .card-bar-fill { height:100%; border-radius:99px; transition:width .5s ease; }
+  .fn0 { width:0%; }
+  .fn1 { width:33%; background:var(--jcb-green); }
+  .fn2 { width:66%; background:var(--yellow); }
+  .fn3 { width:100%; background:var(--jcb-red); }
+
+  #toast {
+    position:fixed; bottom:24px; left:50%;
+    transform:translateX(-50%) translateY(80px);
+    background:var(--surface2); border:1px solid var(--border);
+    color:var(--text); padding:10px 20px; border-radius:30px;
+    font-size:13px; z-index:999;
+    transition:transform .3s ease, opacity .3s;
+    opacity:0; pointer-events:none; white-space:nowrap;
+  }
+  #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+  .btn-reset {
+    display:block; margin:20px auto 0;
+    background:none; border:1px solid var(--border); color:var(--text-muted);
+    font-size:11px; padding:6px 16px; border-radius:20px; cursor:pointer;
+    font-family:'Noto Sans TC',sans-serif; transition:all .15s;
+  }
+  .btn-reset:hover { border-color:var(--jcb-red); color:var(--jcb-red); }
+
+  .modal-bg {
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,.78); z-index:100; align-items:center; justify-content:center;
+  }
+  .modal-bg.show { display:flex; }
+  .modal {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:16px; padding:24px; max-width:340px; width:92%;
+  }
+  .modal h3 { font-size:16px; margin-bottom:4px; }
+  .modal-sub { font-size:12px; color:var(--text-muted); margin-bottom:18px; }
+  .picker-label { font-size:11px; letter-spacing:1px; color:var(--text-muted); text-transform:uppercase; margin-bottom:8px; }
+
+  .window-picker { margin-bottom:18px; }
+  .window-options { display:flex; flex-direction:column; gap:7px; }
+  .window-opt {
+    display:flex; align-items:center; gap:10px;
+    background:var(--surface2); border:1.5px solid var(--border);
+    border-radius:10px; padding:10px 14px; cursor:pointer; transition:all .15s;
+  }
+  .window-opt:hover { border-color:var(--jcb-green); }
+  .window-opt.selected { border-color:var(--jcb-green); background:var(--jcb-green-dim); }
+  .window-opt input[type=radio] { accent-color:var(--jcb-green); width:15px; height:15px; flex-shrink:0; }
+  .window-opt-text { flex:1; }
+  .window-opt-name { font-size:13px; font-weight:500; }
+  .window-opt-range { font-size:11px; color:var(--text-muted); margin-top:2px; font-family:'DM Mono',monospace; }
+  .window-opt.is-current .window-opt-name::after { content:' ✦ 目前時段'; font-size:10px; color:var(--jcb-green); font-weight:400; }
+  .modal-btns { display:flex; gap:10px; }
+  .modal-btns button {
+    flex:1; padding:10px; border-radius:9px; border:none;
+    font-size:13px; font-weight:500; cursor:pointer; font-family:'Noto Sans TC',sans-serif;
+  }
+  .btn-confirm { background:var(--jcb-green); color:#0d0f14; }
+  .btn-confirm:disabled { background:var(--surface2); color:var(--text-muted); cursor:not-allowed; }
+  .btn-cancel { background:var(--surface2); color:var(--text-muted); }
+
+  .retro-modal-header { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+  .retro-badge {
+    font-size:10px; font-family:'DM Mono',monospace;
+    background:var(--purple-dim); color:var(--purple);
+    border:1px solid var(--purple); padding:2px 7px; border-radius:4px;
+  }
+  .retro-form { display:flex; flex-direction:column; gap:12px; margin-bottom:18px; }
+  .retro-field label {
+    font-size:11px; color:var(--text-muted); letter-spacing:1px;
+    text-transform:uppercase; display:block; margin-bottom:6px;
+  }
+  .month-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+  .month-btn {
+    padding:8px 4px; border-radius:8px; border:1.5px solid var(--border);
+    background:var(--surface2); color:var(--text-muted); font-size:12px;
+    cursor:pointer; text-align:center; transition:all .15px;
+    font-family:'Noto Sans TC',sans-serif;
+  }
+  .month-btn:hover { border-color:var(--purple); color:var(--purple); }
+  .month-btn.sel { border-color:var(--purple); background:var(--purple-dim); color:var(--purple); font-weight:600; }
+  .month-btn.disabled { opacity:.35; cursor:not-allowed; pointer-events:none; }
+  .retro-win-opts { display:flex; flex-direction:column; gap:6px; }
+  .retro-win-opt {
+    display:flex; align-items:center; gap:10px;
+    background:var(--surface2); border:1.5px solid var(--border);
+    border-radius:10px; padding:10px 14px; cursor:pointer; transition:all .15s;
+  }
+  .retro-win-opt:hover { border-color:var(--purple); }
+  .retro-win-opt.sel { border-color:var(--purple); background:var(--purple-dim); }
+  .retro-win-opt.disabled { opacity:.35; cursor:not-allowed; pointer-events:none; }
+  .retro-win-opt input[type=radio] { accent-color:var(--purple); width:15px; height:15px; flex-shrink:0; }
+  .retro-win-name { font-size:13px; font-weight:500; flex:1; }
+  .retro-win-range { font-size:11px; color:var(--text-muted); font-family:'DM Mono',monospace; }
+  .retro-win-tag { font-size:10px; padding:2px 6px; border-radius:4px; font-family:'DM Mono',monospace; }
+  .tag-used { background:var(--jcb-red-dim); color:var(--jcb-red); }
+  .tag-ok   { background:var(--purple-dim); color:var(--purple); }
+  .btn-confirm-retro { background:var(--purple); color:#fff; }
+  .btn-confirm-retro:disabled { background:var(--surface2); color:var(--text-muted); cursor:not-allowed; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">
+    <span class="jcb-badge">JCB</span>
+    <h1 id="main-title">登錄管家</h1>
+  </div>
+  <div style="display:flex; justify-content:center; gap:8px; align-items:center; margin-bottom:4px;">
+    <div class="ver-wrap" id="ver-wrap">
+      <span class="ver-tag" onclick="toggleVerTooltip(event)">v1.21</span>
+      <div class="ver-tooltip" id="ver-tooltip">
+        <div class="vt-version">v1.21</div>
+        <div class="vt-date">2026-05-03 發布</div>
+        <hr class="vt-divider">
+        <div class="vt-label">本次更新</div>
+        <div class="vt-item">新增智慧知識看板</div>
+        <div class="vt-item">隨機信用卡極值技巧，每次開啟都不同</div>
+        <hr class="vt-divider">
+        <div class="vt-label">歷史版本</div>
+        <div class="vt-item">v1.20 · 新增星期顯示功能</div>
+        <div class="vt-item">v1.19 · 支援離線模式、禁止下拉重新整理</div>
+        <div class="vt-item">v1.18 · 撤銷二步驟確認，防止誤觸</div>
+      </div>
+    </div>
+    <div class="header-sub" id="current-date" style="margin-top:0;"></div>
+  </div>
+</div>
+
+<!-- ★ 智慧知識看板 ★ -->
+<div class="knowledge-panel" id="knowledge-panel">
+  <div class="kp-inner">
+    <div class="kp-header">
+      <span class="kp-spark" id="kp-spark"></span>
+      <span class="kp-label" id="kp-label" style="color:var(--teal)"></span>
+      <span class="kp-tag" id="kp-tag"></span>
+      <button class="kp-shuffle" onclick="shuffleKnowledge()" title="換一則">⟳</button>
+    </div>
+    <div class="kp-content-wrap" id="kp-content-wrap">
+      <div class="kp-title" id="kp-title"></div>
+      <div class="kp-body" id="kp-body"></div>
+    </div>
+    <div class="kp-footer">
+      <div class="kp-dots" id="kp-dots"></div>
+      <div class="kp-counter" id="kp-counter"></div>
+    </div>
+  </div>
+</div>
+
+<div id="reminder-banner">
+  <button class="banner-close" onclick="dismissBanner()">✕</button>
+  <div class="banner-icon" id="banner-icon"></div>
+  <div class="banner-title" id="banner-title"></div>
+  <div class="banner-body" id="banner-body"></div>
+</div>
+
+<div class="notif-bar">
+  <div class="notif-bar-label">🔔 瀏覽器通知提醒</div>
+  <span class="notif-status" id="notif-status"></span>
+  <button class="btn-notif" id="btn-notif" onclick="requestNotif()">開啟通知</button>
+  <button class="btn-test-notif" onclick="testNotif()">測試通知</button>
+</div>
+
+<div class="period-bar">
+  <div class="period-dot" id="period-dot"></div>
+  <div class="period-info">
+    <div class="period-status" id="period-status"></div>
+    <div class="period-next" id="period-next"></div>
+  </div>
+  <div class="period-countdown" id="period-countdown"></div>
+  <div class="period-windows" id="period-windows"></div>
+</div>
+
+<div class="section-title">我的 JCB 卡片</div>
+<div class="cards-grid" id="cards-grid"></div>
+<div class="summary" id="summary"></div>
+<button class="btn-reset" onclick="confirmReset()">重置所有資料</button>
+
+<div style="text-align:center; margin-top:40px; padding:20px 0; border-top:1px solid var(--border);">
+  <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px;">
+    JCB 登錄管家 &nbsp;·&nbsp; <span style="color:var(--purple);">v1.21</span> &nbsp;·&nbsp; 2026-05-03
+  </div>
+  <div style="font-size:10px; color:var(--text-muted); margin-top:4px; opacity:.5;">&copy; 2026 · 10 張卡 · 全年上限 30 次</div>
+</div>
+
+<div id="toast"></div>
+
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h3 id="modal-title"></h3>
+    <div class="modal-sub">請選擇本次登錄所屬時段</div>
+    <div class="window-picker">
+      <div class="picker-label">選擇登錄時段</div>
+      <div class="window-options" id="window-options"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn-confirm" id="modal-ok" disabled onclick="confirmRegister()">確認登錄</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="retro-modal-bg">
+  <div class="modal">
+    <div class="retro-modal-header">
+      <h3 id="retro-modal-title"></h3>
+      <span class="retro-badge">補登</span>
+    </div>
+    <div class="modal-sub">選擇要補登的月份與時段</div>
+    <div class="retro-form">
+      <div class="retro-field">
+        <label>月份</label>
+        <div class="month-grid" id="retro-month-grid"></div>
+      </div>
+      <div class="retro-field">
+        <label>時段</label>
+        <div class="retro-win-opts" id="retro-win-opts"></div>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeRetroModal()">取消</button>
+      <button class="btn-confirm-retro" id="retro-ok" disabled onclick="confirmRetro()">確認補登</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const VERSIONS=[
-  {num:"3.7.0",date:"2026-05-04",changes:[
-    "✦ 新增每月自動重置：每月開啟App自動偵測是否跨月",
-    "✦ 跨月時上月確認記錄自動封存至歷史，本月乾淨重新開始",
-    "✦ 重置後顯示藍色提示列，可手動關閉",
-  ]},
-  {num:"3.6.0",date:"2026-05-04",changes:["✦ 修正各波段截止日計算邏輯","✦ 兆豐銀行截止日固定每月6號"]},
-  {num:"3.5.0",date:"2026-05-04",changes:["✦ 加回手動/自動繳費標示","✦ 銀行清單加回左側彩色頭像"]},
-  {num:"3.4.1",date:"2026-05-03",changes:["✦ 修復Samsung瀏覽器黑畫面相容性問題"]},
-  {num:"1.0.0",date:"2026-04-24",changes:["✦ 初始版本發布"]}
+// =============================================
+// 智慧知識看板資料庫
+// =============================================
+const KNOWLEDGE = [
+  {
+    theme: { label:'🚇 悠遊卡新制', tag:'登錄制度', accent:['#2dd4bf','#38bdf8'], glow:'#2dd4bf', bg:'var(--teal-dim)', border:'var(--teal)', tagColor:'var(--teal)' },
+    spark:'🚇',
+    title:'悠遊卡 10% 回饋：一年只有 3 次機會',
+    body:'新光悠遊 JCB（#skb_easycard）加入 JCB 登錄制後，每月登錄一次才能啟動<span class="kp-highlight" style="background:var(--teal-dim);color:var(--teal);">悠遊自動加值 10% 回饋</span>。全年上限 3 次，建議選第一期（1日）確保整月有效。'
+  },
+  {
+    theme: { label:'✈️ 機場接送', tag:'隱藏福利', accent:['#fb923c','#f59e0b'], glow:'#fb923c', bg:'var(--amber-dim)', border:'var(--amber)', tagColor:'var(--amber)' },
+    spark:'✈️',
+    title:'JCB 白金卡專屬：免費機場接送怎麼用？',
+    body:'多家銀行 JCB 白金等級提供每年 <span class="kp-highlight" style="background:var(--amber-dim);color:var(--amber);">2～4 次免費機場接送</span>。出發前 3 天預約，指定乘車區域、時段確認，返台回程同樣可用。注意：部分銀行需月費達門檻才計次，記得先查刷卡條件。'
+  },
+  {
+    theme: { label:'🗾 日本旅遊', tag:'境外回饋', accent:['#f472b6','#a78bfa'], glow:'#f472b6', bg:'var(--pink-dim)', border:'var(--pink)', tagColor:'var(--pink)' },
+    spark:'🗾',
+    title:'在日本刷 JCB：比 Visa/MC 多拿一倍',
+    body:'日本是 JCB 主場，ATM 提款、百貨消費甚至便利商店都有<span class="kp-highlight" style="background:var(--pink-dim);color:var(--pink);">日幣結算 2~3% 加碼</span>。搭配聯邦微風 / 玉山熊本熊的境外加碼，旅遊旺季出發前務必先完成當月登錄，境外刷卡效益最大化。'
+  },
+  {
+    theme: { label:'☕ 星巴克密技', tag:'生活回饋', accent:['#4f8ef7','#2dd4bf'], glow:'#4f8ef7', bg:'var(--blue-dim)', border:'var(--blue)', tagColor:'var(--blue)' },
+    spark:'☕',
+    title:'星巴克半價怎麼來的？JCB 聯名優惠拆解',
+    body:'中信 LALAPORT / 無印 JCB 在特定活動期間可享星巴克 <span class="kp-highlight" style="background:var(--blue-dim);color:var(--blue);">買一送一或 5 折</span>。關鍵步驟：① 先完成當月 JCB 登錄 ② 活動 App 綁定指定卡 ③ 結帳前先出示 App 再刷卡。順序不對就無法折抵，切記！'
+  },
+  {
+    theme: { label:'🏬 百貨回饋', tag:'購物優化', accent:['#a78bfa','#f472b6'], glow:'#a78bfa', bg:'var(--purple-dim)', border:'var(--purple)', tagColor:'var(--purple)' },
+    spark:'🏬',
+    title:'漢神百貨 JCB：週年慶衝刺最高 12%',
+    body:'中信漢神 JCB 在漢神百貨本館 & 巨蛋消費享基本回饋，搭配<span class="kp-highlight" style="background:var(--purple-dim);color:var(--purple);">週年慶登錄加碼最高 12%</span>。訣竅：週年慶前完成第三期登錄，確保活動當月回饋已啟動，加碼期間集中大額消費。'
+  },
+  {
+    theme: { label:'🐻 熊本熊卡', tag:'玉山限定', accent:['#2dd4bf','#00c97a'], glow:'#2dd4bf', bg:'var(--teal-dim)', border:'var(--teal)', tagColor:'var(--teal)' },
+    spark:'🐻',
+    title:'玉山熊本熊 JCB：指定通路無上限回饋',
+    body:'玉山熊本熊 JCB 在日本 JCB 特約店（包含全家 FamilyMart、唐吉訶德）享<span class="kp-highlight" style="background:var(--teal-dim);color:var(--teal);">境外最高 3.5% 回饋</span>。登錄完成後，境外消費不設單筆上限，長途旅行刷起來最划算。'
+  },
+  {
+    theme: { label:'💳 聯邦微風', tag:'百貨聯名', accent:['#38bdf8','#4f8ef7'], glow:'#38bdf8', bg:'var(--sky-dim)', border:'var(--sky)', tagColor:'var(--sky)' },
+    spark:'🌿',
+    title:'聯邦微風 JCB：微風廣場消費最高 5%',
+    body:'聯邦微風 JCB 在微風廣場全館（含超市）最高回饋 <span class="kp-highlight" style="background:var(--sky-dim);color:var(--sky);">5% 現金回饋</span>，每月登錄才能啟動。搭配微風聯名活動期間，加碼可疊加，建議購買高單價商品（精品、家電）時集中在登錄當月刷。'
+  },
+  {
+    theme: { label:'📦 無印良品', tag:'中信限定', accent:['#fb923c','#f5c842'], glow:'#fb923c', bg:'var(--amber-dim)', border:'var(--amber)', tagColor:'var(--amber)' },
+    spark:'📦',
+    title:'中信無印 JCB：在無印消費 5% 不手軟',
+    body:'中信無印 JCB 全台無印良品門市消費享 <span class="kp-highlight" style="background:var(--amber-dim);color:var(--amber);">5% 現金回饋</span>，年度大促（週年慶、黑色星期五）期間可疊加 MUJI 會員點數。登錄完成後，建議將無印大採購（棉被、家具）安排在該月一次完成，最大化回饋。'
+  },
+  {
+    theme: { label:'😊 遠東快樂卡', tag:'遠百加碼', accent:['#00c97a','#2dd4bf'], glow:'#00c97a', bg:'var(--jcb-green-dim)', border:'var(--jcb-green)', tagColor:'var(--jcb-green)' },
+    spark:'😊',
+    title:'遠東快樂卡 JCB：遠百 + 愛買雙重加碼',
+    body:'遠東快樂卡 JCB 在遠東百貨、愛買量販消費享基本 <span class="kp-highlight" style="background:var(--jcb-green-dim);color:var(--jcb-green);">3% + 登錄加碼</span>，Happy Go 點數同步累積可再折抵。訣竅：選週六「快樂購物日」集中刷，單日刷滿門檻額外觸發加碼，效益翻倍。'
+  },
+  {
+    theme: { label:'💳 富邦 JU卡紅', tag:'雙幣回饋', accent:['#e5001a','#fb923c'], glow:'#e5001a', bg:'var(--jcb-red-dim)', border:'var(--jcb-red)', tagColor:'var(--jcb-red)' },
+    spark:'💳',
+    title:'富邦 JU卡紅 JCB：國內外雙線並行',
+    body:'富邦 JU卡紅 JCB 國內外消費均享 <span class="kp-highlight" style="background:var(--jcb-red-dim);color:var(--jcb-red);">現金回饋不歸零</span>，全年累積無上限。完成登錄後，境外 JCB 特約店加碼最有感；搭配 JCB 台灣特約加油站優惠，日常加油也能持續累積。'
+  },
+  {
+    theme: { label:'🚇 新光悠遊', tag:'加值密技', accent:['#2dd4bf','#4f8ef7'], glow:'#2dd4bf', bg:'var(--teal-dim)', border:'var(--teal)', tagColor:'var(--teal)' },
+    spark:'🚇',
+    title:'悠遊自動加值 10%：設定一次終身受益',
+    body:'新光悠遊 JCB 只要設定<span class="kp-highlight" style="background:var(--teal-dim);color:var(--teal);">悠遊卡自動加值綁定此卡</span>，加值金額 10% 直接回饋現金。每月自動加值次數不限，但全年登錄上限 3 次，建議 1、5、9 月各登錄一次，確保全年效益不中斷。'
+  },
+  {
+    theme: { label:'❤️ 華南寵愛紅', tag:'女性專屬', accent:['#f472b6','#fb923c'], glow:'#f472b6', bg:'var(--pink-dim)', border:'var(--pink)', tagColor:'var(--pink)' },
+    spark:'❤️',
+    title:'華南寵愛紅 JCB：美妝、保健品回饋王',
+    body:'華南寵愛紅 JCB 在指定美妝、保健品通路（含屈臣氏、寶雅）享 <span class="kp-highlight" style="background:var(--pink-dim);color:var(--pink);">額外 2% 加碼</span>，搭配 JCB 登錄基本回饋可疊加。建議在年中促銷、雙11購買保養品大單，集中消費、同時觸發多項優惠。'
+  },
+  {
+    theme: { label:'🌟 登錄時機學', tag:'策略精華', accent:['#f5c842','#fb923c'], glow:'#f5c842', bg:'var(--yellow-dim)', border:'var(--yellow)', tagColor:'var(--yellow)' },
+    spark:'🌟',
+    title:'登錄時段選哪期最划算？策略全解析',
+    body:'三個登錄期（1–5日、11–15日、21–25日）效果相同，但<span class="kp-highlight" style="background:var(--yellow-dim);color:var(--yellow);">第一期（1日開搶）</span>最推薦：整月消費都在登錄效益內，且月初刷卡習慣容易固定。若該月有大型購物節（雙11、週年慶），務必提前在第三期完成登錄。'
+  },
+  {
+    theme: { label:'🗾 JCB 境外', tag:'海外最強', accent:['#f472b6','#a78bfa'], glow:'#f472b6', bg:'var(--pink-dim)', border:'var(--pink)', tagColor:'var(--pink)' },
+    spark:'🗗',
+    title:'日本 JCB 特約店清單：哪些地方多賺？',
+    body:'日本全家便利商店、唐吉訶德、松本清藥妝、大塚家具均為 JCB 特約加碼店。<span class="kp-highlight" style="background:var(--pink-dim);color:var(--pink);">玉山熊本熊 JCB 在這些地方最高 3.5%</span>，加上消費日圓結算手續費較低，是日旅首選。出發前記得完成當月登錄，到日本第一筆就能啟動。'
+  },
+  {
+    theme: { label:'💡 最大化技巧', tag:'終極密技', accent:['#a78bfa','#4f8ef7'], glow:'#a78bfa', bg:'var(--purple-dim)', border:'var(--purple)', tagColor:'var(--purple)' },
+    spark:'💡',
+    title:'10 張卡全部登錄：效益最大化行動計畫',
+    body:'每月第一期（1–5日）是黃金窗口。建議固定每月 <span class="kp-highlight" style="background:var(--purple-dim);color:var(--purple);">1 號早上 9:01</span> 打開本 App，一次完成所有可登錄卡片，全年 30 次用盡，月均享受最多 10 張卡的完整回饋。搭配行事曆提醒，不再漏登。'
+  },
 ];
-const VERSION=VERSIONS[0];
 
-const BANKS=[
-  {id:9,name:"中國信託",day:20,type:"auto",wave:1,dueDay:null},
-  {id:10,name:"兆豐銀行",day:21,type:"manual",wave:1,dueDay:6},
-  {id:11,name:"彰化銀行",day:31,type:"manual",wave:1,dueDay:null},
-  {id:1,name:"遠東商銀",day:2,type:"manual",wave:2,dueDay:null},
-  {id:2,name:"國泰世華",day:3,type:"auto",wave:2,dueDay:null},
-  {id:3,name:"華南銀行",day:7,type:"auto",wave:2,dueDay:null},
-  {id:4,name:"玉山銀行",day:7,type:"auto",wave:2,dueDay:null},
-  {id:5,name:"聯邦銀行",day:9,type:"auto",wave:3,dueDay:null},
-  {id:6,name:"元大銀行",day:10,type:"manual",wave:3,dueDay:null},
-  {id:7,name:"台新銀行",day:12,type:"auto",wave:3,dueDay:null},
-  {id:8,name:"新光銀行",day:14,type:"auto",wave:3,dueDay:null},
-  {id:12,name:"台北富邦",day:null,type:"manual",wave:null,dueDay:null}
-];
+let kpIndex = Math.floor(Math.random() * KNOWLEDGE.length);
 
-const WAVES=[
-  {id:1,label:"第一波",checkDay:4,banks:[9,10,11],color:"#34d399",next:false},
-  {id:2,label:"第二波",checkDay:18,banks:[1,2,3,4],color:"#60a5fa",next:false},
-  {id:3,label:"第三波",checkDay:25,banks:[5,6,7,8],color:"#a78bfa",next:false}
-];
-
-// ── helpers ───────────────────────────────────────────────────────────────────
-function getDue(bank){
-  if(!bank.day)return null;
-  if(bank.dueDay){const t=new Date();return new Date(t.getFullYear(),t.getMonth(),bank.dueDay);}
-  const t=new Date();
-  const refMonth=bank.wave===1
-    ?new Date(t.getFullYear(),t.getMonth()-1,1)
-    :new Date(t.getFullYear(),t.getMonth(),1);
-  const lastDay=new Date(refMonth.getFullYear(),refMonth.getMonth()+1,0).getDate();
-  const billingDate=new Date(refMonth.getFullYear(),refMonth.getMonth(),Math.min(bank.day,lastDay));
-  const due=new Date(billingDate);due.setDate(due.getDate()+18);return due;
+function applyKnowledgeTheme(k) {
+  const panel = document.getElementById('knowledge-panel');
+  const t = k.theme;
+  panel.style.setProperty('--kp-accent-start', t.accent[0]);
+  panel.style.setProperty('--kp-accent-end',   t.accent[1]);
+  panel.style.setProperty('--kp-glow',          t.glow);
 }
-function getWD(w){const t=new Date();t.setHours(0,0,0,0);return new Date(t.getFullYear(),t.getMonth(),w.checkDay);}
-function daysTo(d){const t=new Date();t.setHours(0,0,0,0);return Math.ceil((d-t)/86400000);}
-function fmt(d){return d?d.getMonth()+1+"/"+d.getDate():"—";}
-function fmtTime(ts){if(!ts)return"";const d=new Date(ts);return(d.getMonth()+1)+"/"+d.getDate()+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");}
-function fmtMonthLabel(key){const[y,m]=key.split("-");return y+"年"+m+"月";}
-function curWave(){const d=new Date().getDate();return d<=4?1:d<=18?2:3;}
-function monthKey(){const t=new Date();return t.getFullYear()+"-"+(t.getMonth()+1);}
 
-// ── state ─────────────────────────────────────────────────────────────────────
-let fw="all",banner="",bTimer=null,isOffline=false,autoResetMsg="";
-let confirmed=JSON.parse(localStorage.getItem("confirmed")||"{}");
-let dismissedNotifs=JSON.parse(localStorage.getItem("dismissedNotifs")||"{}");
-let history=JSON.parse(localStorage.getItem("payHistory")||"{}");
-let currentTab="dashboard",sheetExpandedMonths={};
-const today=new Date(),cw=curWave();
+function renderKnowledge(idx) {
+  const k = KNOWLEDGE[idx];
+  applyKnowledgeTheme(k);
 
-// ── 離線偵測 ──────────────────────────────────────────────────────────────────
-window.addEventListener('offline',()=>{isOffline=true;showBanner("📵 目前處於離線模式",true);});
-window.addEventListener('online',()=>{isOffline=false;showBanner("✅ 網路已恢復連線");});
-if(!navigator.onLine){isOffline=true;}
+  document.getElementById('kp-spark').textContent = k.spark;
+  const labelEl = document.getElementById('kp-label');
+  labelEl.textContent = k.theme.label;
+  labelEl.style.color = k.theme.tagColor;
 
-// ── ★ 每月自動重置 ★ ─────────────────────────────────────────────────────────
-// 邏輯：App每次開啟，比對上次記錄的月份(lastSeenMonth)
-// 若跨月 → 封存舊月confirmed到history → 清除舊月confirmed → 更新lastSeenMonth
-(function runMonthlyAutoReset(){
-  const currentKey=monthKey();
-  const lastKey=localStorage.getItem("lastSeenMonth");
+  const tagEl = document.getElementById('kp-tag');
+  tagEl.textContent = k.theme.tag;
+  tagEl.style.color = k.theme.tagColor;
+  tagEl.style.borderColor = k.theme.tagColor;
+  tagEl.style.background = k.theme.bg;
 
-  // 首次使用：記錄月份就好
-  if(!lastKey){
-    localStorage.setItem("lastSeenMonth",currentKey);
-    return;
+  // 重建 content-wrap 觸發動畫
+  const wrap = document.getElementById('kp-content-wrap');
+  wrap.style.animation = 'none';
+  wrap.offsetHeight; // reflow
+  wrap.style.animation = '';
+
+  document.getElementById('kp-title').textContent = k.title;
+  document.getElementById('kp-body').innerHTML = k.body;
+
+  // dots
+  const dotsEl = document.getElementById('kp-dots');
+  const DOTS_SHOW = 5;
+  let dotsHTML = '';
+  for (let i = 0; i < DOTS_SHOW; i++) {
+    dotsHTML += `<div class="kp-dot${i === (idx % DOTS_SHOW) ? ' active' : ''}"></div>`;
   }
-  // 同月：不動
-  if(lastKey===currentKey) return;
+  dotsEl.innerHTML = dotsHTML;
+  dotsEl.style.setProperty('--kp-accent-start', k.theme.accent[0]);
 
-  // ── 跨月了，執行封存 ──
-  // 1. 把 lastKey 月份的 confirmed 全部封存到 history
-  const oldData=confirmed[lastKey]||{};
-  if(Object.keys(oldData).length>0){
-    if(!history[lastKey])history[lastKey]={};
-    Object.keys(oldData).forEach(id=>{
-      if(history[lastKey][id])return; // 已有記錄就不覆蓋
-      const bank=BANKS.find(b=>b.id===Number(id));
-      if(!bank)return;
-      history[lastKey][id]={
-        ts:oldData[id].ts,
-        bankName:bank.name,
-        wave:bank.wave,
-        type:bank.type,
-        day:bank.day
-      };
-    });
-    localStorage.setItem("payHistory",JSON.stringify(history));
+  document.getElementById('kp-counter').textContent = (idx + 1) + ' / ' + KNOWLEDGE.length;
+}
+
+function shuffleKnowledge() {
+  const prev = kpIndex;
+  do { kpIndex = Math.floor(Math.random() * KNOWLEDGE.length); } while (kpIndex === prev && KNOWLEDGE.length > 1);
+  renderKnowledge(kpIndex);
+}
+
+// =============================================
+// 離線狀態偵測
+// =============================================
+function updateOnlineStatus() {
+  if (navigator.onLine) {
+    document.body.classList.remove('is-offline');
+  } else {
+    document.body.classList.add('is-offline');
+    showToast('⚠️ 目前處於離線模式');
   }
-
-  // 2. 清除所有舊月的 confirmed，只保留本月（如果有的話）
-  const freshConfirmed={};
-  if(confirmed[currentKey]) freshConfirmed[currentKey]=confirmed[currentKey];
-  confirmed=freshConfirmed;
-  localStorage.setItem("confirmed",JSON.stringify(confirmed));
-
-  // 3. 清除舊月的 dismissedNotifs
-  const freshDismissed={};
-  if(dismissedNotifs[currentKey]) freshDismissed[currentKey]=dismissedNotifs[currentKey];
-  dismissedNotifs=freshDismissed;
-  localStorage.setItem("dismissedNotifs",JSON.stringify(dismissedNotifs));
-
-  // 4. 更新 lastSeenMonth
-  localStorage.setItem("lastSeenMonth",currentKey);
-
-  // 5. 設定提示訊息
-  autoResetMsg=`${fmtMonthLabel(lastKey)}的記錄已自動封存，${fmtMonthLabel(currentKey)}重新開始！`;
-})();
-
-// ── banner ────────────────────────────────────────────────────────────────────
-function showBanner(msg,persist=false){
-  banner=msg;render();
-  if(bTimer)clearTimeout(bTimer);
-  if(!persist){bTimer=setTimeout(()=>{banner="";render();},3000);}
 }
-function dismissAutoResetMsg(){autoResetMsg="";render();}
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
 
-// ── confirmed helpers ─────────────────────────────────────────────────────────
-function getConfirmed(id){const k=monthKey();return confirmed[k]&&confirmed[k][id]?confirmed[k][id]:null;}
-function isDone(id){return !!getConfirmed(id);}
-
-// ── wave-3 完成封存（月中用）──────────────────────────────────────────────────
-function getWave3BankIds(){return WAVES.find(w=>w.id===3).banks;}
-function checkWave3Complete(){
-  return getWave3BankIds().filter(id=>BANKS.find(b=>b.id===id)).every(id=>isDone(id));
-}
-function archiveCurrentMonth(){
-  const k=monthKey();
-  const cur=confirmed[k]||{};
-  if(!history[k])history[k]={};
-  Object.keys(cur).forEach(id=>{
-    if(history[k][id])return;
-    const bank=BANKS.find(b=>b.id===Number(id));
-    if(!bank)return;
-    history[k][id]={ts:cur[id].ts,bankName:bank.name,wave:bank.wave,type:bank.type,day:bank.day};
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('SW registered'))
+      .catch(err => console.log('SW registration failed'));
   });
-  localStorage.setItem("payHistory",JSON.stringify(history));
-  showBanner("🎉 本月對帳全部完成！歷史已存檔。");
-}
-let wave3WasComplete=checkWave3Complete();
-function checkAndTriggerWave3(){
-  const nowComplete=checkWave3Complete();
-  if(!wave3WasComplete&&nowComplete){wave3WasComplete=true;archiveCurrentMonth();}
-  else wave3WasComplete=nowComplete;
 }
 
-// ── modals ────────────────────────────────────────────────────────────────────
-function showVersionHistory(){
-  const mr=document.getElementById("modal-root");
-  mr.innerHTML=`<div class="modal-bg" onclick="closeModal()"><div class="modal" onclick="event.stopPropagation()" style="max-height:80vh;overflow-y:auto;text-align:left">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div style="font-size:16px;font-weight:700;color:#f1f5f9">📋 更新履歷</div>
-      <button onclick="closeModal()" style="background:none;border:1px solid #334155;color:#64748b;border-radius:8px;padding:4px 10px;cursor:pointer;font-family:inherit;font-size:12px">關閉</button>
-    </div>
-    ${VERSIONS.map((v,i)=>`<div style="margin-bottom:16px;padding-bottom:16px;border-bottom:${i<VERSIONS.length-1?"1px solid #1e2330":"none"}">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-        <span style="background:rgba(99,102,241,.15);color:#818cf8;border:1px solid rgba(99,102,241,.3);border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700">v${v.num}</span>
-        ${i===0?"<span style='background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.2);border-radius:20px;padding:2px 8px;font-size:10px'>最新</span>":""}
-        <span style="font-size:11px;color:#475569">${v.date}</span>
-      </div>
-      ${v.changes.map(c=>`<div style="font-size:12px;color:#64748b;line-height:1.8;padding-left:4px">${c}</div>`).join("")}
-    </div>`).join("")}
-  </div></div>`;
-}
-function confirmPay(id){
-  const bank=BANKS.find(b=>b.id===id);
-  document.getElementById("modal-root").innerHTML=`<div class="modal-bg" onclick="closeModal()"><div class="modal" onclick="event.stopPropagation()">
-    <div style="font-size:22px;margin-bottom:12px">💳</div>
-    <div style="font-size:16px;font-weight:700;color:#f1f5f9;margin-bottom:6px">${bank.name}</div>
-    <div style="font-size:13px;color:#64748b;margin-bottom:20px">確定已完成繳款了嗎？</div>
-    <div style="display:flex;gap:10px;justify-content:center">
-      <button onclick="closeModal()" style="flex:1;padding:10px;border:1px solid #334155;background:none;color:#94a3b8;border-radius:10px;cursor:pointer;font-family:inherit;font-size:14px">取消</button>
-      <button onclick="doConfirm(${id})" style="flex:1;padding:10px;border:none;background:rgba(52,211,153,.15);color:#34d399;border-radius:10px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600">確認</button>
-    </div>
-  </div></div>`;
-}
-function cancelPay(id){
-  const bank=BANKS.find(b=>b.id===id);
-  const cd=getConfirmed(id);
-  document.getElementById("modal-root").innerHTML=`<div class="modal-bg" onclick="closeModal()"><div class="modal" onclick="event.stopPropagation()">
-    <div style="font-size:22px;margin-bottom:12px">↩️</div>
-    <div style="font-size:16px;font-weight:700;color:#f1f5f9;margin-bottom:6px">${bank.name}</div>
-    <div style="font-size:12px;color:#34d399;margin-bottom:4px">✓ 已確認繳款</div>
-    <div style="font-size:11px;color:#475569;margin-bottom:16px">確認時間：${fmtTime(cd.ts)}<br><br>確定要取消嗎？</div>
-    <div style="display:flex;gap:10px;justify-content:center">
-      <button onclick="closeModal()" style="flex:1;padding:10px;border:1px solid #334155;background:none;color:#94a3b8;border-radius:10px;cursor:pointer;font-family:inherit;font-size:14px">保留</button>
-      <button onclick="doCancel(${id})" style="flex:1;padding:10px;border:none;background:rgba(239,68,68,.15);color:#f87171;border-radius:10px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600">取消確認</button>
-    </div>
-  </div></div>`;
-}
-function doConfirm(id){
-  const k=monthKey();
-  if(!confirmed[k])confirmed[k]={};
-  confirmed[k][id]={ts:Date.now()};
-  localStorage.setItem("confirmed",JSON.stringify(confirmed));
-  closeModal();checkAndTriggerWave3();
-  if(!banner)showBanner("✓ 已標記確認！");render();
-}
-function doCancel(id){
-  const k=monthKey();
-  if(confirmed[k])delete confirmed[k][id];
-  localStorage.setItem("confirmed",JSON.stringify(confirmed));
-  wave3WasComplete=false;closeModal();showBanner("已取消確認");render();
-}
-function closeModal(){document.getElementById("modal-root").innerHTML="";}
-function resetAll(){
-  if(!confirm("確定要重置本月所有確認記錄嗎？"))return;
-  const k=monthKey();delete confirmed[k];
-  localStorage.setItem("confirmed",JSON.stringify(confirmed));
-  wave3WasComplete=false;render();
-}
+// =============================================
+// 卡片與資料邏輯（原版不動）
+// =============================================
+const CARDS = [
+  { id:'federal_breezy', bank:'聯邦銀行', name:'微風 JCB',      icon:'🌿' },
+  { id:'federal_crane',  bank:'聯邦銀行', name:'吉鶴 JCB',      icon:'🦢' },
+  { id:'ctbc_lala',      bank:'中國信託', name:'LALAPORT JCB',  icon:'🛍️' },
+  { id:'ctbc_muji',      bank:'中國信託', name:'無印良品 JCB',   icon:'📦' },
+  { id:'ctbc_hanshen',   bank:'中國信託', name:'漢神百貨 JCB',   icon:'🏬' },
+  { id:'esun_kumamon',   bank:'玉山銀行', name:'熊本熊 JCB',     icon:'🐻' },
+  { id:'skb_easycard',   bank:'新光銀行', name:'新光悠遊 JCB',   icon:'🚇' },
+  { id:'hua_red',        bank:'華南銀行', name:'寵愛紅卡 JCB',   icon:'❤️' },
+  { id:'far_happy',      bank:'遠東銀行', name:'快樂卡 JCB',     icon:'😊' },
+  { id:'fubon_jcb',      bank:'富邦銀行', name:'JU卡紅 JCB',     icon:'💳' },
+];
 
-// ── alerts ────────────────────────────────────────────────────────────────────
-function isDismissed(id){const k=monthKey();return !!(dismissedNotifs[k]&&dismissedNotifs[k][id]);}
-function dismissAlert(id){
-  const k=monthKey();if(!dismissedNotifs[k])dismissedNotifs[k]={};
-  dismissedNotifs[k][id]=true;localStorage.setItem("dismissedNotifs",JSON.stringify(dismissedNotifs));render();
+const WINDOWS = [
+  { label:'第一期', start:[1,9,0],  end:[5,18,0]  },
+  { label:'第二期', start:[11,9,0], end:[15,18,0] },
+  { label:'第三期', start:[21,9,0], end:[25,18,0] },
+];
+
+const PRESET = {
+  federal_breezy: [
+    { month:'2026-01', date:'2026/01/21 第三期' },
+    { month:'2026-02', date:'2026/02/01 第一期' },
+    { month:'2026-03', date:'2026/03/01 第一期' },
+  ],
+  federal_crane: [],
+  ctbc_lala: [
+    { month:'2026-01', date:'2026/01/21 第三期' },
+    { month:'2026-02', date:'2026/02/01 第一期' },
+    { month:'2026-03', date:'2026/03/01 第一期' },
+  ],
+  ctbc_muji:    [],
+  ctbc_hanshen: [],
+  esun_kumamon: [
+    { month:'2026-03', date:'2026/03/21 第三期' },
+    { month:'2026-04', date:'2026/04/01 第一期' },
+  ],
+  skb_easycard: [
+    { month:'2026-03',  date:'2026/03/21 第三期' },
+    { month:'2026-04a', date:'2026/04/01 第一期' },
+    { month:'2026-04b', date:'2026/04/21 第三期' },
+  ],
+  hua_red:   [],
+  far_happy: [],
+  fubon_jcb: [],
+};
+
+const KEY = 'jcb_v4';
+function loadData() {
+  try { const s=localStorage.getItem(KEY); if(s) return JSON.parse(s); } catch {}
+  const d=JSON.parse(JSON.stringify(PRESET));
+  localStorage.setItem(KEY,JSON.stringify(d)); return d;
 }
-function dismissAllAlerts(){
-  const k=monthKey();if(!dismissedNotifs[k])dismissedNotifs[k]={};
-  getPageAlerts().forEach(a=>{dismissedNotifs[k][a.id]=true;});
-  localStorage.setItem("dismissedNotifs",JSON.stringify(dismissedNotifs));render();
-}
-function getPageAlerts(){
-  const alerts=[];
-  WAVES.forEach(w=>{
-    const cd=getWD(w),days=daysTo(cd);
-    const unconfirmedManual=w.banks.map(id=>BANKS.find(b=>b.id===id)).filter(b=>b&&b.type==="manual"&&!isDone(b.id));
-    if(days===0)alerts.push({id:"wave-check-"+w.id,level:"today",icon:"📋",title:w.label+"檢查日！",body:"今天（"+fmt(cd)+"）請對帳"});
-    else if(days===1)alerts.push({id:"wave-soon-"+w.id,level:"urgent",icon:"⚡",title:w.label+"明天對帳",body:"明天（"+fmt(cd)+"）對帳日"});
-    unconfirmedManual.forEach(b=>{
-      const due=getDue(b);if(!due)return;
-      const dd=daysTo(due);
-      if(dd<=3&&dd>=0){
-        alerts.push({id:"bank-"+b.id,level:dd===0?"urgent":dd===1?"today":"soon",
-          icon:dd===0?"🚨":"⚠️",title:b.name+(dd===0?" 今日截止！":" 明日截止！"),body:"截止日："+fmt(due)});
-      }
-    });
+function save(d) { localStorage.setItem(KEY,JSON.stringify(d)); }
+let data = loadData();
+let undoPendingId = null;
+
+function now() { return new Date(); }
+function ymKey(d) { return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
+
+function inWindow(date) {
+  const day=date.getDate(), m=date.getHours()*60+date.getMinutes();
+  return WINDOWS.some(w => {
+    const s=w.start[1]*60, e=w.end[1]*60;
+    return day>=w.start[0]&&day<=w.end[0]&&(day>w.start[0]||m>=s)&&(day<w.end[0]||m<=e);
   });
-  return alerts.filter(a=>!isDismissed(a.id));
+}
+function curWin(date) {
+  const day=date.getDate(), m=date.getHours()*60+date.getMinutes();
+  return WINDOWS.findIndex(w => {
+    const s=w.start[1]*60, e=w.end[1]*60;
+    return day>=w.start[0]&&day<=w.end[0]&&(day>w.start[0]||m>=s)&&(day<w.end[0]||m<=e);
+  });
+}
+function nextWin(date) {
+  const day=date.getDate(), m=date.getHours()*60+date.getMinutes();
+  for (const w of WINDOWS) {
+    const s=w.start[1]*60;
+    if (day<w.start[0]||(day===w.start[0]&&m<s))
+      return {label:w.label, daysLeft:w.start[0]-day, startDay:w.start[0], startH:w.start[1]};
+  }
+  return null;
 }
 
-// ── tabs ──────────────────────────────────────────────────────────────────────
-function setTab(t){currentTab=t;render();}
-function setFw(v){fw=v;render();}
-function toggleSheetMonth(key){sheetExpandedMonths[key]=!sheetExpandedMonths[key];render();}
+function regs(id)  { return data[id]||[]; }
+function total(id) { return regs(id).length; }
+function usedMonth(id, ym) { return regs(id).some(r=>r.month===ym||r.month.startsWith(ym)); }
+function canReg(id) {
+  const t=now(), ym=ymKey(t);
+  if (total(id)>=3)      return {ok:false, msg:'全年已滿'};
+  if (usedMonth(id, ym)) return {ok:false, msg:'本月已報'};
+  if (!inWindow(t))      return {ok:false, msg:'時段未開'};
+  return {ok:true};
+}
+function doReg(id, dateLabel, ym) {
+  if (!data[id]) data[id]=[];
+  data[id].push({month:ym, date:dateLabel});
+  save(data); render();
+}
 
-// ── sheet page ────────────────────────────────────────────────────────────────
-function renderSheetPage(){
-  const k=monthKey(),curData=confirmed[k]||{};
-  const allMonths={};
-  Object.keys(history).forEach(mk=>{if(!allMonths[mk])allMonths[mk]={};Object.assign(allMonths[mk],history[mk]);});
-  Object.keys(curData).forEach(id=>{
-    if(!allMonths[k])allMonths[k]={};
-    if(!allMonths[k][id]){
-      const bank=BANKS.find(b=>b.id===Number(id));if(!bank)return;
-      allMonths[k][id]={ts:curData[id].ts,bankName:bank.name,wave:bank.wave,type:bank.type,day:bank.day};
+function requestUndo(id) {
+  undoPendingId = (undoPendingId === id) ? null : id;
+  render();
+}
+function confirmUndo(id) {
+  if (!data[id] || !data[id].length) return;
+  data[id].pop();
+  save(data);
+  undoPendingId = null;
+  showToast('已撤銷最後一筆登錄');
+  render();
+}
+function cancelUndo() {
+  undoPendingId = null;
+  render();
+}
+
+function anyRegInMonth(id, ym) {
+  return regs(id).some(r => r.month === ym || r.month.startsWith(ym));
+}
+
+function getReminderState() {
+  const t=now(), ym=ymKey(t), open=inWindow(t), wi=curWin(t);
+  const eligible=CARDS.filter(c=>total(c.id)<3&&!usedMonth(c.id,ym));
+  if (open && eligible.length>0) {
+    const w=WINDOWS[wi];
+    return {type:'go', icon:'🟢',
+      title:`現在可以登錄！${w.label}進行中`,
+      body:`共 ${eligible.length} 張卡尚未登錄：${eligible.map(c=>c.name).join('、')}`};
+  }
+  return null;
+}
+
+let bannerDismissed=false;
+function renderBanner() {
+  if (bannerDismissed) return;
+  const state=getReminderState();
+  const el=document.getElementById('reminder-banner');
+  if (!state) { el.style.display='none'; return; }
+  el.style.display='block'; el.className=state.type;
+  document.getElementById('banner-icon').textContent=state.icon;
+  document.getElementById('banner-title').textContent=state.title;
+  document.getElementById('banner-body').innerHTML=state.body;
+}
+function dismissBanner() { bannerDismissed=true; document.getElementById('reminder-banner').style.display='none'; }
+
+function updateNotifUI() {
+  const perm=Notification.permission;
+  const statusEl=document.getElementById('notif-status');
+  const btnEl=document.getElementById('btn-notif');
+  if (perm==='granted') { statusEl.textContent='● 通知已開啟'; statusEl.className='notif-status granted'; btnEl.textContent='✓ 已開啟'; btnEl.disabled=true; }
+  else if (perm==='denied') { statusEl.textContent='● 通知已封鎖'; statusEl.className='notif-status denied'; btnEl.textContent='請至設定解鎖'; btnEl.disabled=true; }
+  else { statusEl.textContent='● 尚未授權'; statusEl.className='notif-status default'; btnEl.textContent='開啟通知'; btnEl.disabled=false; }
+}
+function requestNotif() {
+  if (!('Notification' in window)) { showToast('此瀏覽器不支援通知'); return; }
+  Notification.requestPermission().then(p=>{ updateNotifUI(); if(p==='granted') showToast('✓ 通知已開啟！'); });
+}
+function sendNotif(title, body) {
+  if (Notification.permission!=='granted') return;
+  try { new Notification('JCB 登錄管家', {body, tag:'jcb-reminder'}); } catch(e) {}
+}
+function testNotif() {
+  if (Notification.permission!=='granted') { showToast('請先開啟通知權限'); return; }
+  const state=getReminderState();
+  sendNotif(state?state.title:'JCB 登錄測試通知', state?state.body:'版本 v1.21 運作正常！');
+  showToast('已發送測試通知');
+}
+
+function renderPeriodBar() {
+  const t=now(), open=inWindow(t), wi=curWin(t);
+  document.getElementById('period-dot').className='period-dot '+(open?'open':'closed');
+  const sEl=document.getElementById('period-status');
+  sEl.className='period-status '+(open?'open':'closed');
+  sEl.textContent=open?'✓ 目前為登錄時段':'✕ 目前非登錄時段';
+  const cd=document.getElementById('period-countdown');
+  if (open) {
+    const w=WINDOWS[wi];
+    const end=new Date(t.getFullYear(),t.getMonth(),w.end[0],w.end[1]);
+    const ms=end-t, h=Math.floor(ms/3600000), m=Math.floor((ms%3600000)/60000);
+    document.getElementById('period-next').textContent=w.label+' 登錄中';
+    cd.textContent='剩 '+h+'h '+m+'m';
+  } else {
+    const nx=nextWin(t);
+    if (nx) {
+      document.getElementById('period-next').textContent='下次：'+nx.label+'（'+nx.startDay+' 號 '+String(nx.startH).padStart(2,'0')+':00）';
+      cd.textContent='還有 '+nx.daysLeft+' 天';
+    } else {
+      document.getElementById('period-next').textContent='下個月第一期（1號09:00）';
+      cd.textContent='';
     }
-  });
-  const sortedMonths=Object.keys(allMonths).sort((a,b)=>{
-    const[ay,am]=a.split("-").map(Number),[by,bm]=b.split("-").map(Number);
-    return by!==ay?by-ay:bm-am;
-  });
-  if(!sortedMonths.length)return`<div style="text-align:center;padding:40px 20px;color:#475569;font-size:13px"><div style="font-size:32px;margin-bottom:12px">📭</div>尚無繳款記錄</div>`;
-  const wC={1:"#34d399",2:"#60a5fa",3:"#a78bfa",null:"#64748b"};
-  const wL={1:"第一波",2:"第二波",3:"第三波",null:"—"};
-  return sortedMonths.map(mk=>{
-    const entries=Object.values(allMonths[mk]);
-    const isExpanded=sheetExpandedMonths[mk]!==false;
-    const isCur=mk===k;
-    const rows=entries.sort((a,b)=>(a.wave||99)-(b.wave||99)).map(e=>`<tr>
-      <td style="color:#cbd5e1;font-weight:500">${e.bankName}</td>
-      <td style="color:${wC[e.wave]||"#64748b"}">${wL[e.wave]||"—"}</td>
-      <td><span class="chip ${e.type==="manual"?"manual":"auto"}" style="font-size:10px">${e.type==="manual"?"⚠ 手動":"✓ 自動"}</span></td>
-      <td style="color:#34d399;font-size:11px">${fmtTime(e.ts)}</td>
-    </tr>`).join("");
-    return`<div class="month-header">
-      <div class="month-header-title" onclick="toggleSheetMonth('${mk}')">
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-          <span style="font-size:14px;font-weight:700;color:#f1f5f9">${fmtMonthLabel(mk)}</span>
-          ${isCur?`<span style="background:rgba(59,130,246,.12);color:#60a5fa;border:1px solid rgba(59,130,246,.2);border-radius:20px;padding:2px 7px;font-size:10px">本月</span>`:""}
-          <span style="font-size:11px;color:#475569">${entries.length} 筆</span>
-        </div>
-        <span style="color:#475569;font-size:14px">${isExpanded?"▾":"▸"}</span>
-      </div>
-      ${isExpanded?`<table class="sheet-table"><thead><tr><th>銀行</th><th>波段</th><th>類型</th><th>確認時間</th></tr></thead><tbody>${rows}</tbody></table>`:""}
-    </div>`;
-  }).join("");
-}
-
-// ── main render ───────────────────────────────────────────────────────────────
-function render(){
-  const ds=today.getFullYear()+"/"+(today.getMonth()+1)+"/"+today.getDate();
-  const bannerHtml=banner?`<div class="banner ${isOffline?"offline-banner":""}">${banner}</div>`:"";
-
-  // 跨月重置提示（藍色，手動關閉）
-  const resetBarHtml=autoResetMsg?`<div class="reset-info-bar">
-    <span style="font-size:16px">🔄</span>
-    <span style="flex:1">${autoResetMsg}</span>
-    <button onclick="dismissAutoResetMsg()" style="background:none;border:none;color:#60a5fa;cursor:pointer;font-size:16px;line-height:1;padding:0 4px">✕</button>
-  </div>`:"";
-
-  const headerHtml=`<div style="border-bottom:1px solid #1e2330;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8">
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-      <span style="font-size:18px;font-weight:700;color:#f1f5f9">信用卡繳款管理</span>
-      <span class="version-badge" onclick="showVersionHistory()">v${VERSION.num} 📋</span>
-      ${isOffline?`<span style="background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2);border-radius:20px;padding:2px 8px;font-size:10px">📵 離線中</span>`:""}
-    </div>
-    <div style="text-align:right;font-size:12px;color:#94a3b8">${ds}</div>
-  </div>`;
-
-  const tabNavHtml=`<div class="tab-nav">
-    <button class="tab-btn ${currentTab==="dashboard"?"active":""}" onclick="setTab('dashboard')">📊 總覽</button>
-    <button class="tab-btn ${currentTab==="sheet"?"active":""}" onclick="setTab('sheet')">📋 歷史</button>
-  </div>`;
-
-  if(currentTab==="sheet"){
-    document.getElementById("app").innerHTML=bannerHtml+headerHtml+
-      `<div class="page-content" style="padding:16px 12px">
-        ${resetBarHtml}
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-          <span style="font-size:11px;color:#475569">PAYMENT HISTORY · 各月繳款記錄</span>
-          <span style="font-size:10px;color:#334155">點擊月份展開</span>
-        </div>
-        ${renderSheetPage()}
-      </div>`+tabNavHtml;
-    return;
   }
-
-  const nextW=WAVES.map(w=>({...w,dl:daysTo(getWD(w))})).filter(w=>w.dl>=0).sort((a,b)=>a.dl-b.dl)[0];
-  const banks=fw==="all"?BANKS:BANKS.filter(b=>String(b.wave)===fw);
-  const doneCount=BANKS.filter(b=>isDone(b.id)).length;
-  const alerts=getPageAlerts();
-  const w3done=checkWave3Complete();
-
-  const alertsHtml=alerts.length?`<div class="notif-panel">
-    <div class="notif-panel-header">
-      <div style="display:flex;align-items:center;gap:8px">
-        <span class="pulse" style="width:7px;height:7px;border-radius:50%;background:#ef4444;display:inline-block"></span>
-        <span style="font-size:11px;color:#94a3b8;font-weight:600">ALERTS · ${alerts.length} 則提醒</span>
-      </div>
-      <button onclick="dismissAllAlerts()" style="background:none;border:1px solid #1e2330;color:#475569;border-radius:6px;padding:3px 8px;cursor:pointer;font-size:10px;font-family:inherit">全部忽略</button>
-    </div>
-    ${alerts.map(a=>`<div class="notif-item ${a.level}">
-      <span class="notif-dot ${a.level==="urgent"?"red":a.level==="today"?"yellow":"blue"}"></span>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:600;color:${a.level==="urgent"?"#ef4444":a.level==="today"?"#fbbf24":"#3b82f6"}">${a.icon} ${a.title}</div>
-        <div style="font-size:11px;color:#475569;margin-top:2px">${a.body}</div>
-      </div>
-      <button class="dismiss-btn" onclick="dismissAlert('${a.id}')">忽略</button>
-    </div>`).join("")}
-  </div>`:"";
-
-  document.getElementById("app").innerHTML=bannerHtml+headerHtml+
-    `<div class="page-content" style="padding:16px 12px">
-      ${resetBarHtml}
-      ${w3done?`<div class="wave3-done-banner"><span style="font-size:22px">🎉</span><div><div style="font-size:13px;font-weight:700;color:#34d399">本月對帳全部完成！</div><div style="font-size:11px;color:#475569;margin-top:3px">所有波段已完成，等待下月自動重置。</div></div></div>`:""}
-      ${alertsHtml}
-      <div class="stat-grid">
-        <div class="stat-card">
-          <div style="font-size:9px;color:#475569;margin-bottom:6px">已確認</div>
-          <div style="font-size:26px;font-weight:700;color:#34d399">${doneCount}/${BANKS.length}</div>
-          <div style="font-size:10px;color:#64748b">本月完成</div>
-        </div>
-        ${nextW?`<div class="stat-card" style="border-color:rgba(59,130,246,.2)">
-          <div style="font-size:9px;color:#475569;margin-bottom:6px">下次對帳</div>
-          <div style="font-size:26px;font-weight:700;color:${nextW.color}">${nextW.dl===0?"今天":nextW.dl+"天"}</div>
-          <div style="font-size:10px;color:#64748b">${nextW.label} · ${nextW.checkDay}號</div>
-        </div>`:""}
-      </div>
-      <div class="card" style="padding:12px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-          ${WAVES.map(w=>{
-            const days=daysTo(getWD(w)),isPast=days<0,isCur=w.id===cw;
-            const wDone=w.banks.filter(id=>BANKS.find(b=>b.id===id)).every(id=>isDone(id));
-            return`<div style="text-align:center;flex:1">
-              <div style="width:30px;height:30px;border-radius:50%;background:${isPast?"#1e2330":isCur?w.color:"#1a2035"};border:2px solid ${isPast?"#1e2330":w.color};margin:0 auto;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:${isPast?"#334155":isCur?"#0a0c10":w.color};box-shadow:${isCur?"0 0 14px "+w.color+"55":"none"}">${wDone?"✓":w.id}</div>
-              <div style="font-size:11px;margin-top:4px;color:${isPast?"#334155":"#94a3b8"}">${w.label}</div>
-              <div style="font-size:9px;color:#475569">${w.checkDay}號</div>
-              <div style="font-size:10px;color:${isPast?"#334155":days===0?"#fbbf24":w.color};margin-top:2px">${wDone?"已完成":isPast?"已過":days===0?"今天！":days+"天後"}</div>
-            </div>`;
-          }).join("")}
-        </div>
-      </div>
-      <div class="card">
-        <div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1a1f2e;flex-wrap:wrap;gap:8">
-          <span style="font-size:11px;color:#475569">BANK MONITOR · ${banks.length} 家</span>
-          <div style="display:flex;gap:4px;flex-wrap:wrap">
-            ${["all","1","2","3"].map(w=>`<button class="wave-btn ${fw===w?"active":""}" onclick="setFw('${w}')">${w==="all"?"全部":`第${["一","二","三"][Number(w)-1]}波`}</button>`).join("")}
-            <button onclick="resetAll()" style="border:1px solid rgba(239,68,68,.2);background:rgba(239,68,68,.08);color:#f87171;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:11px;font-family:inherit">重置</button>
-          </div>
-        </div>
-        ${banks.map(bank=>{
-          const wave=WAVES.find(w=>w.id===bank.wave);
-          const due=getDue(bank),done=isDone(bank.id),cd=getConfirmed(bank.id);
-          return`<div class="row" style="opacity:${done?0.55:1}">
-            <div class="avatar" style="background:${wave?wave.color+"18":"#1e2330"};border:1px solid ${wave?wave.color+"30":"#1e2330"};color:${wave?wave.color:"#475569"}">${bank.name[0]}</div>
-            <div style="flex:1;min-width:0">
-              <div style="font-size:14px;font-weight:500;color:#cbd5e1;text-decoration:${done?"line-through":"none"}">${bank.name}</div>
-              <div class="due-info">${bank.day?"結帳 "+bank.day+" 號 → 截止 "+fmt(due):"結帳日未知"}</div>
-              ${done&&cd?`<div style="font-size:10px;color:#34d399;margin-top:2px">✓ 確認時間：${fmtTime(cd.ts)}</div>`:""}
-            </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-              ${wave?`<span class="chip w${wave.id}" style="font-size:10px">${wave.label}</span>`:""}
-              <span class="chip ${bank.type==="manual"?"manual":"auto"}">${bank.type==="manual"?"⚠ 手動":"✓ 自動"}</span>
-              ${!done
-                ?`<button class="cbtn" onclick="confirmPay(${bank.id})">確認繳款</button>`
-                :`<button class="cbtn done" onclick="confirmPay(${bank.id})">✓ 已確認</button><button class="cbtn cancel" onclick="cancelPay(${bank.id})">✕ 取消</button>`}
-            </div>
-          </div>`;
-        }).join("")}
-      </div>
-    </div>`+tabNavHtml;
+  document.getElementById('period-windows').innerHTML=WINDOWS.map((w,i)=>`
+    <div class="pw${wi===i?' active':''}">
+      <div class="pw-label">${w.label}</div>
+      <div>${w.start[0]}日 ${String(w.start[1]).padStart(2,'0')}:00 – ${w.end[0]}日 ${String(w.end[1]).padStart(2,'0')}:00</div>
+    </div>`).join('');
 }
 
-window.setFw=setFw;window.setTab=setTab;window.confirmPay=confirmPay;window.cancelPay=cancelPay;
-window.doConfirm=doConfirm;window.doCancel=doCancel;window.closeModal=closeModal;window.resetAll=resetAll;
-window.dismissAlert=dismissAlert;window.dismissAllAlerts=dismissAllAlerts;window.showVersionHistory=showVersionHistory;
-window.toggleSheetMonth=toggleSheetMonth;window.dismissAutoResetMsg=dismissAutoResetMsg;
+function renderCards() {
+  const t=now(), ym=ymKey(t), openWin=inWindow(t);
+  document.getElementById('cards-grid').innerHTML=CARDS.map(c=>{
+    const list=regs(c.id), tot=list.length, usedM=usedMonth(c.id,ym), chk=canReg(c.id);
+    let cls='', badge='';
+    if (tot>=3){cls='maxed';badge='<span class="card-status badge-maxed">全年已滿</span>';}
+    else if (usedM){cls='monthly-done';badge='<span class="card-status badge-monthly">本月已登錄</span>';}
+    else if (openWin){cls='open-window';badge='<span class="card-status badge-ok">可登錄</span>';}
+    else{badge='<span class="card-status badge-closed">待機中</span>';}
+    const pips=[0,1,2].map(i=>{const u=i<tot;return`<div class="pip ${u?'used':'empty'}" title="${u?list[i].date:''}">${u?'✓':''}</div>`;}).join('');
+    const log=list.length?`<div class="log-entry">${list.slice().reverse().map(r=>`<span class="${r.date&&r.date.includes('補登')?'log-retro':''}">▸ ${r.date}</span>`).join('<br>')}</div>`:'';
+    const retroBtn = tot < 3
+      ? `<button class="btn-retro" onclick="openRetroModal('${c.id}','${c.name}')">＋ 補登</button>`
+      : '';
+    const isPending = undoPendingId === c.id;
+    const lastEntry = list.length ? list[list.length-1] : null;
+    const undoBtn = tot > 0
+      ? `<button class="btn-undo${isPending?' pending':''}" onclick="requestUndo('${c.id}')">↩ 撤銷</button>`
+      : '';
+    const undoConfirmBar = isPending && lastEntry ? `
+      <div class="undo-confirm-bar">
+        <div>
+          <div class="undo-confirm-text">⚠️ 確定要撤銷？</div>
+          <div class="undo-confirm-sub">▸ ${lastEntry.date}</div>
+        </div>
+        <button class="btn-undo-no" onclick="cancelUndo()">取消</button>
+        <button class="btn-undo-yes" onclick="confirmUndo('${c.id}')">確認撤銷</button>
+      </div>` : '';
+    return`<div class="card ${cls}">
+      <div class="card-top">
+        <div class="card-icon">${c.icon}</div>
+        <div class="card-meta"><div class="card-name">${c.name}</div><div class="card-bank">${c.bank}</div></div>
+        ${badge}
+      </div>
+      <div class="card-bottom">
+        <div class="pips">${pips}<span class="pip-count">${tot}/3</span></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+          ${undoBtn}
+          ${retroBtn}
+          <button class="btn-register ${chk.ok?'can':'disabled'}" onclick="${chk.ok?`openModal('${c.id}','${c.name}')`:''}">${chk.ok?'✓ 確認登錄':chk.msg}</button>
+        </div>
+      </div>
+      ${undoConfirmBar}
+      ${log}</div>`;
+  }).join('');
+}
+
+function renderSummary() {
+  const t=now(), ym=ymKey(t);
+  const used=CARDS.reduce((a,c)=>a+total(c.id),0), max=30;
+  const pct=Math.round(used/max*100);
+  const doneM=CARDS.filter(c=>usedMonth(c.id,ym)).length;
+  const bars=CARDS.map(c=>{
+    const n=total(c.id);
+    return`<div class="card-bar-row">
+      <div class="card-bar-name"><span>${c.bank.substring(0,2)} | ${c.name}</span><span style="font-family:'DM Mono',monospace;">${n}/3</span></div>
+      <div class="card-bar-track"><div class="card-bar-fill fn${n}"></div></div>
+    </div>`;
+  }).join('');
+  document.getElementById('summary').innerHTML=`
+    <div class="summary-title">全年統計概覽</div>
+    <div class="summary-row"><span>總登錄次數</span><span class="summary-val">${used} / ${max}</span></div>
+    <div class="summary-row"><span>本月已達成</span><span class="summary-val">${doneM} 張卡</span></div>
+    <div class="progress-section">
+      <div class="progress-header"><span class="progress-label">年度總進度</span><span class="progress-fraction">${pct}%</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div style="margin-top:24px;"><div style="font-size:11px;color:var(--text-muted);margin-bottom:12px;letter-spacing:1px;">各卡片年度紀錄</div>${bars}</div>
+    </div>`;
+}
+
+let pendingCard=null, selWi=null;
+function openModal(id,name){
+  pendingCard=id; selWi=null;
+  document.getElementById('modal-title').textContent='登錄「'+name+'」';
+  document.getElementById('modal-ok').disabled=true;
+  const t=now(), awi=curWin(t), yr=t.getFullYear(), mo=t.getMonth()+1;
+  document.getElementById('window-options').innerHTML=WINDOWS.map((w,i)=>{
+    const range=yr+'/'+String(mo).padStart(2,'0')+'/'+String(w.start[0]).padStart(2,'0')+' – '+String(w.end[0]).padStart(2,'0')+'日';
+    return`<label class="window-opt${i===awi?' is-current':''}" id="wopt-${i}">
+      <input type="radio" name="wopt" value="${i}" onchange="selWin(${i})">
+      <div class="window-opt-text">
+        <div class="window-opt-name">${w.label}</div>
+        <div class="window-opt-range">${range}</div>
+      </div></label>`;
+  }).join('');
+  if(awi>=0){const r=document.querySelector('input[name=wopt][value="'+awi+'"]');if(r){r.checked=true;selWin(awi);}}
+  document.getElementById('modal-bg').classList.add('show');
+}
+function selWin(i){
+  selWi=i;
+  document.querySelectorAll('.window-opt').forEach((el,j)=>el.classList.toggle('selected',j===i));
+  document.getElementById('modal-ok').disabled=false;
+}
+function closeModal(){ document.getElementById('modal-bg').classList.remove('show'); pendingCard=null; selWi=null; }
+function confirmRegister(){
+  if(!pendingCard||selWi===null) return;
+  const t=now(), w=WINDOWS[selWi], yr=t.getFullYear(), mo=t.getMonth()+1;
+  const label=yr+'/'+String(mo).padStart(2,'0')+'/'+String(w.start[0]).padStart(2,'0')+' '+w.label;
+  const ym=yr+'-'+String(mo).padStart(2,'0');
+  doReg(pendingCard, label, ym);
+  closeModal(); showToast('✓ 登錄成功');
+}
+
+let retroCardId=null, retroSelMonth=null, retroSelWi=null;
+function openRetroModal(id, name) {
+  retroCardId=id; retroSelMonth=null; retroSelWi=null;
+  document.getElementById('retro-modal-title').textContent='補登「'+name+'」';
+  document.getElementById('retro-ok').disabled=true;
+  const t=now(), yr=t.getFullYear(), curMo=t.getMonth()+1;
+  const grid=document.getElementById('retro-month-grid');
+  grid.innerHTML='';
+  for(let mo=1; mo<=curMo; mo++){
+    const ym=yr+'-'+String(mo).padStart(2,'0');
+    const alreadyUsed=anyRegInMonth(id, ym);
+    const full=total(id)>=3;
+    const btn=document.createElement('button');
+    btn.className='month-btn'+(alreadyUsed||full?' disabled':'');
+    btn.textContent=mo+'月';
+    if(!alreadyUsed && !full){ btn.onclick=()=>selectRetroMonth(ym, yr, mo, btn); }
+    grid.appendChild(btn);
+  }
+  document.getElementById('retro-win-opts').innerHTML='<div style="font-size:12px;color:var(--text-muted);padding:8px 0;">← 請先選擇月份</div>';
+  document.getElementById('retro-modal-bg').classList.add('show');
+}
+function selectRetroMonth(ym, yr, mo, btn) {
+  retroSelMonth=ym; retroSelWi=null;
+  document.getElementById('retro-ok').disabled=true;
+  document.querySelectorAll('.month-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  document.getElementById('retro-win-opts').innerHTML=WINDOWS.map((w,i)=>{
+    const thisUsed=regs(retroCardId).some(r=>(r.month===ym||r.month.startsWith(ym)) && r.date && r.date.includes(w.label));
+    const range=yr+'/'+String(mo).padStart(2,'0')+'/'+String(w.start[0]).padStart(2,'0')+' – '+String(w.end[0]).padStart(2,'0')+'日';
+    return`<label class="retro-win-opt${thisUsed?' disabled':''}" id="rwin-${i}">
+      <input type="radio" name="rwin" value="${i}" ${thisUsed?'disabled':''} onchange="selectRetroWin(${i})">
+      <div style="flex:1;">
+        <div class="retro-win-name">${w.label}</div>
+        <div class="retro-win-range">${range}</div>
+      </div>
+    </label>`;
+  }).join('');
+}
+function selectRetroWin(i){
+  retroSelWi=i;
+  document.querySelectorAll('.retro-win-opt').forEach((el,j)=>el.classList.toggle('sel',j===i));
+  document.getElementById('retro-ok').disabled=false;
+}
+function closeRetroModal(){ document.getElementById('retro-modal-bg').classList.remove('show'); }
+function confirmRetro(){
+  if(!retroCardId||!retroSelMonth||retroSelWi===null) return;
+  const w=WINDOWS[retroSelWi];
+  const [yr,mo]=retroSelMonth.split('-');
+  const dateLabel=`${yr}/${mo}/${String(w.start[0]).padStart(2,'0')} ${w.label}【補登】`;
+  let monthKey=retroSelMonth;
+  const existing=regs(retroCardId).filter(r=>r.month===retroSelMonth||r.month.startsWith(retroSelMonth));
+  if(existing.length>0) monthKey=retroSelMonth+(existing.length===1?'a':'b');
+  doReg(retroCardId, dateLabel, monthKey);
+  closeRetroModal(); showToast('✓ 補登成功');
+}
+
+function confirmReset(){
+  if(!confirm('確定要清除所有登錄紀錄嗎？')) return;
+  data={}; save(data); render(); showToast('已重置');
+}
+
+let tTimer;
+function showToast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(tTimer); tTimer=setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+function toggleVerTooltip(e) {
+  e.stopPropagation();
+  document.getElementById('ver-tooltip').classList.toggle('show');
+}
+document.addEventListener('click', () => {
+  const vt = document.getElementById('ver-tooltip');
+  if (vt) vt.classList.remove('show');
+});
+
+function render(){
+  const t=now();
+  const weekDays = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
+  const dayName = weekDays[t.getDay()];
+  document.getElementById('current-date').textContent =
+    t.getFullYear() + ' 年 ' + (t.getMonth() + 1) + ' 月 ' + t.getDate() + ' 日 (' + dayName + ') ' +
+    String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
+  renderPeriodBar(); renderCards(); renderSummary(); renderBanner(); updateNotifUI();
+}
+
+// 初始化知識看板（只在載入時隨機一次）
+renderKnowledge(kpIndex);
 render();
+setInterval(render, 60000);
 </script>
-</body></html>
+</body>
+</html>
