@@ -598,7 +598,7 @@
   <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px;">
     JCB 登錄管家 &nbsp;·&nbsp;
     <span id="footer-ver-tag" onclick="toggleFooterVer(event)" style="color:var(--purple); cursor:pointer; text-decoration:underline; text-underline-offset:3px; text-decoration-style:dotted;">v1.22 📋</span>
-    &nbsp;·&nbsp; 2026-05-03nbsp;·&nbsp;·&nbsp; 2026-05-03nbsp; 2026-05-05
+    &nbsp;·&nbsp; 2026-05-05
   </div>
   <div style="font-size:10px; color:var(--text-muted); margin-top:4px; opacity:.5;">&copy; 2026 · 10 張卡 · 全年上限 30 次</div>
 </div>
@@ -883,8 +883,13 @@ updateOnlineStatus();
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').then(reg => {
-      console.log('[SW] 已註冊，版本 v1.22');
+    // 動態取得 sw.js 路徑，支援 GitHub Pages 子目錄
+    const swPath = (location.pathname.endsWith('/') ? location.pathname : location.pathname.replace(/\/[^/]*$/, '/')) + 'sw.js';
+    navigator.serviceWorker.register(swPath).then(reg => {
+      console.log('[SW] 已註冊，版本 v1.22，路徑:', swPath);
+
+      // 有新版 SW 時，立刻安裝
+      reg.update();
 
       // 偵測 SW 有新版本時提示使用者重載
       reg.addEventListener('updatefound', () => {
