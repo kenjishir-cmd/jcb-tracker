@@ -884,7 +884,10 @@ updateOnlineStatus();
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     // 動態取得 sw.js 路徑，支援 GitHub Pages 子目錄
-    const swPath = (location.pathname.endsWith('/') ? location.pathname : location.pathname.replace(/\/[^/]*$/, '/')) + 'sw.js';
+    const swBase = location.pathname.endsWith('/')
+      ? location.pathname
+      : location.pathname.replace(/[^/]*$/, '');
+    const swPath = swBase + 'sw.js?v=1.22';
     navigator.serviceWorker.register(swPath).then(reg => {
       console.log('[SW] 已註冊，版本 v1.22，路徑:', swPath);
 
@@ -1368,6 +1371,19 @@ function render(){
     t.getFullYear() + ' 年 ' + (t.getMonth() + 1) + ' 月 ' + t.getDate() + ' 日 (' + dayName + ') ' +
     String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
   renderPeriodBar(); renderCards(); renderSummary(); renderBanner(); updateNotifUI();
+}
+
+// 強制清除舊版 SW 快取（版本不符時）
+const APP_VERSION = 'v1.22';
+if ('caches' in window) {
+  caches.keys().then(keys => {
+    keys.forEach(key => {
+      if (!key.includes('1.22')) {
+        console.log('[App] 刪除舊快取:', key);
+        caches.delete(key);
+      }
+    });
+  });
 }
 
 // 初始化知識看板（隨機起點 + 啟動自動輪播）
