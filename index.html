@@ -8,7 +8,7 @@
 <link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>JCB 登錄管家 v1.21</title>
+<title>JCB 登錄管家 v1.22</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap');
 
@@ -520,16 +520,18 @@
   </div>
   <div style="display:flex; justify-content:center; gap:8px; align-items:center; margin-bottom:4px;">
     <div class="ver-wrap" id="ver-wrap">
-      <span class="ver-tag" onclick="toggleVerTooltip(event)">v1.21</span>
+      <span class="ver-tag" onclick="toggleVerTooltip(event)">v1.22</span>
       <div class="ver-tooltip" id="ver-tooltip">
-        <div class="vt-version">v1.21</div>
-        <div class="vt-date">2026-05-03 發布</div>
+        <div class="vt-version">v1.22</div>
+        <div class="vt-date">2026-05-05 發布</div>
         <hr class="vt-divider">
         <div class="vt-label">本次更新</div>
-        <div class="vt-item">新增智慧知識看板</div>
-        <div class="vt-item">隨機信用卡極值技巧，每次開啟都不同</div>
+        <div class="vt-item">強化 PWA 離線支援，斷網仍可完整使用</div>
+        <div class="vt-item">更新 sw.js Cache First 策略，自動快取所有資源</div>
+        <div class="vt-item">舊版快取自動清除，確保版本一致</div>
         <hr class="vt-divider">
         <div class="vt-label">歷史版本</div>
+        <div class="vt-item">v1.21 · 知識看板自動輪播 + 暫停功能</div>
         <div class="vt-item">v1.20 · 新增星期顯示功能</div>
         <div class="vt-item">v1.19 · 支援離線模式、禁止下拉重新整理</div>
         <div class="vt-item">v1.18 · 撤銷二步驟確認，防止誤觸</div>
@@ -595,8 +597,8 @@
 <div style="text-align:center; margin-top:40px; padding:20px 0; border-top:1px solid var(--border);">
   <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px;">
     JCB 登錄管家 &nbsp;·&nbsp;
-    <span id="footer-ver-tag" onclick="toggleFooterVer(event)" style="color:var(--purple); cursor:pointer; text-decoration:underline; text-underline-offset:3px; text-decoration-style:dotted;">v1.21 📋</span>
-    &nbsp;·&nbsp; 2026-05-03
+    <span id="footer-ver-tag" onclick="toggleFooterVer(event)" style="color:var(--purple); cursor:pointer; text-decoration:underline; text-underline-offset:3px; text-decoration-style:dotted;">v1.22 📋</span>
+    &nbsp;·&nbsp; 2026-05-03nbsp;·&nbsp;·&nbsp; 2026-05-03nbsp; 2026-05-05
   </div>
   <div style="font-size:10px; color:var(--text-muted); margin-top:4px; opacity:.5;">&copy; 2026 · 10 張卡 · 全年上限 30 次</div>
 </div>
@@ -881,9 +883,60 @@ updateOnlineStatus();
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('SW registered'))
-      .catch(err => console.log('SW registration failed'));
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      console.log('[SW] 已註冊，版本 v1.22');
+
+      // 偵測 SW 有新版本時提示使用者重載
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // 有新版 SW 安裝完成，顯示更新提示
+            showUpdateBanner();
+          }
+        });
+      });
+    }).catch(err => console.log('[SW] 註冊失敗:', err));
+
+    // 若 SW 控制頁面後重新整理觸發
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) { refreshing = true; window.location.reload(); }
+    });
+  });
+}
+
+function showUpdateBanner() {
+  // 在頁面頂部插入更新提示條
+  const bar = document.createElement('div');
+  bar.id = 'sw-update-bar';
+  bar.style.cssText = [
+    'position:fixed;top:0;left:0;right:0;z-index:99999',
+    'background:#1e2230;border-bottom:2px solid #a78bfa',
+    'display:flex;align-items:center;justify-content:center;gap:12px',
+    'padding:10px 16px;font-size:12px;color:#e8eaf0',
+    'font-family:Noto Sans TC,sans-serif'
+  ].join(';');
+  bar.innerHTML = `
+    <span>🔄 新版本已就緒</span>
+    <button onclick="applySwUpdate()" style="
+      background:#a78bfa;color:#fff;border:none;
+      padding:5px 14px;border-radius:8px;font-size:12px;
+      cursor:pointer;font-family:inherit;font-weight:600;">
+      立即更新
+    </button>
+    <button onclick="this.parentElement.remove()" style="
+      background:none;border:none;color:#6b7280;
+      font-size:16px;cursor:pointer;line-height:1;">✕</button>
+  `;
+  document.body.prepend(bar);
+}
+
+function applySwUpdate() {
+  navigator.serviceWorker.getRegistration().then(reg => {
+    if (reg && reg.waiting) {
+      reg.waiting.postMessage('SKIP_WAITING');
+    }
   });
 }
 
@@ -1055,7 +1108,7 @@ function sendNotif(title, body) {
 function testNotif() {
   if (Notification.permission!=='granted') { showToast('請先開啟通知權限'); return; }
   const state=getReminderState();
-  sendNotif(state?state.title:'JCB 登錄測試通知', state?state.body:'版本 v1.21 運作正常！');
+  sendNotif(state?state.title:'JCB 登錄測試通知', state?state.body:'版本 v1.22 運作正常！');
   showToast('已發送測試通知');
 }
 
