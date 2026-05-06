@@ -1,84 +1,110 @@
-const CACHE_VERSION = 'jcb-v3';
-const CACHE_URLS = [
+// =============================================
+// JCB 登錄管家 Service Worker v1.22
+// 離線優先策略：Cache First → Network Fallback
+// =============================================
+
+const CACHE_NAME = 'jcb-butler-v1.22';
+const OFFLINE_URL = './index.html';
+
+// 預先快取的資源清單
+const PRECACHE_URLS = [
+  './',
   './index.html',
-  './index.html?v=3',
   './manifest.json',
-  './sw.js',
-  'https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap'
+  // Google Fonts — 快取字型讓離線也能顯示中文
+  'https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap',
 ];
 
-// ── INSTALL：預快取所有核心資源 ──────────────────────
-self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE_VERSION).then(cache =>
-      Promise.allSettled(
-        CACHE_URLS.map(url =>
-          cache.add(url).catch(err => console.warn('[SW] cache.add failed:', url, err))
+// ── Install：預先快取所有資源 ──────────────────
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      // 逐一快取，單一失敗不影響整體
+      return Promise.allSettled(
+        PRECACHE_URLS.map(url =>
+          cache.add(url).catch(err => console.warn('[SW] 快取失敗:', url, err))
         )
-      )
-    ).then(() => console.log('[SW] Install complete:', CACHE_VERSION))
-  );
-  self.skipWaiting();
-});
-
-// ── ACTIVATE：清除所有舊版快取 ───────────────────────
-self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys().then(keys => {
-      console.log('[SW] Existing caches:', keys);
-      return Promise.all(
-        keys.filter(k => k !== CACHE_VERSION).map(k => {
-          console.log('[SW] Deleting old cache:', k);
-          return caches.delete(k);
-        })
       );
-    }).then(() => self.clients.claim())
+    }).then(() => self.skipWaiting())
   );
 });
 
-// ── FETCH：Cache First + 背景更新 ────────────────────
-self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET') return;
-  if (!e.request.url.startsWith('http')) return;
-  if (e.request.url.startsWith('chrome-extension')) return;
-
-  e.respondWith(
-    caches.match(e.request, { ignoreSearch: false }).then(cached => {
-
-      // ── 有快取：立即回傳，背景偷偷更新 ──
-      if (cached) {
-        fetch(e.request).then(res => {
-          if (res && res.status === 200)
-            caches.open(CACHE_VERSION).then(c => c.put(e.request, res.clone()));
-        }).catch(() => {});
-        return cached;
-      }
-
-      // ── 沒快取：嘗試網路，成功就存入快取 ──
-      return fetch(e.request).then(res => {
-        if (res && res.status === 200) {
-          const resClone = res.clone();
-          caches.open(CACHE_VERSION).then(c => c.put(e.request, resClone));
-        }
-        return res;
-      }).catch(() => {
-        // 完全離線且無快取 → 回傳 index.html
-        return caches.match('./index.html').then(fallback => {
-          if (fallback) return fallback;
-          return new Response(
-            '<html><body style="background:#0d0f14;color:#e8eaf0;font-family:sans-serif;text-align:center;padding:60px"><h2>⚠️ 離線中</h2><p>請連線後重新開啟</p></body></html>',
-            { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
-          );
-        });
-      });
-    })
+// ── Activate：清除舊版快取 ────────────────────
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(
+        keys
+          .filter(key => key !== CACHE_NAME)
+          .map(key => {
+            console.log('[SW] 刪除舊快取:', key);
+            return caches.delete(key);
+          })
+      )
+    ).then(() => self.clients.claim())
   );
 });
 
-// ── 接收主頁面訊息 ────────────────────────────────────
-self.addEventListener('message', e => {
-  if (e.data === 'SKIP_WAITING') {
-    console.log('[SW] SKIP_WAITING received');
+// ── Fetch：Cache First，失敗才走網路 ─────────
+self.addEventListener('fetch', event => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // 只處理 GET 請求
+  if (request.method !== 'GET') return;
+
+  // Google Fonts：Stale-While-Revalidate
+  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
+    event.respondWith(staleWhileRevalidate(request));
+    return;
+  }
+
+  // 同源資源：Cache First
+  if (url.origin === self.location.origin) {
+    event.respondWith(cacheFirst(request));
+    return;
+  }
+});
+
+// Cache First 策略
+async function cacheFirst(request) {
+  const cached = await caches.match(request);
+  if (cached) return cached;
+
+  try {
+    const response = await fetch(request);
+    if (response.ok) {
+      const cache = await caches.open(CACHE_NAME);
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch {
+    // 網路失敗時，嘗試回傳主頁（讓 App Shell 顯示）
+    const fallback = await caches.match(OFFLINE_URL);
+    return fallback || new Response('離線中，請稍後再試', {
+      status: 503,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+    });
+  }
+}
+
+// Stale-While-Revalidate 策略（字型用）
+async function staleWhileRevalidate(request) {
+  const cached = await caches.match(request);
+
+  const fetchPromise = fetch(request).then(response => {
+    if (response.ok) {
+      caches.open(CACHE_NAME).then(cache => cache.put(request, response.clone()));
+    }
+    return response;
+  }).catch(() => null);
+
+  return cached || fetchPromise;
+}
+
+// ── Message：手動觸發更新 ──────────────────────
+self.addEventListener('message', event => {
+  if (event.data === 'SKIP_WAITING') {
     self.skipWaiting();
   }
 });
