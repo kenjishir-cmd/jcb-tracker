@@ -8,7 +8,7 @@
 <link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>JCB 登錄管家 v1.22</title>
+<title>JCB 登錄管家 v1.23</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap');
 
@@ -520,17 +520,17 @@
   </div>
   <div style="display:flex; justify-content:center; gap:8px; align-items:center; margin-bottom:4px;">
     <div class="ver-wrap" id="ver-wrap">
-      <span class="ver-tag" onclick="toggleVerTooltip(event)">v1.22</span>
+      <span class="ver-tag" onclick="toggleVerTooltip(event)">v1.23</span>
       <div class="ver-tooltip" id="ver-tooltip">
-        <div class="vt-version">v1.22</div>
-        <div class="vt-date">2026-05-05 發布</div>
+        <div class="vt-version">v1.23</div>
+        <div class="vt-date">2026-11-10 發布</div>
         <hr class="vt-divider">
         <div class="vt-label">本次更新</div>
-        <div class="vt-item">強化 PWA 離線支援，斷網仍可完整使用</div>
-        <div class="vt-item">更新 sw.js Cache First 策略，自動快取所有資源</div>
-        <div class="vt-item">舊版快取自動清除，確保版本一致</div>
+        <div class="vt-item">新增 中國信託晶緻悠遊 JCB（共 11 張卡）</div>
+        <div class="vt-item">全年上限更新為 33 次</div>
         <hr class="vt-divider">
         <div class="vt-label">歷史版本</div>
+        <div class="vt-item">v1.22 · 強化 PWA 離線支援</div>
         <div class="vt-item">v1.21 · 知識看板自動輪播 + 暫停功能</div>
         <div class="vt-item">v1.20 · 新增星期顯示功能</div>
         <div class="vt-item">v1.19 · 支援離線模式、禁止下拉重新整理</div>
@@ -597,10 +597,10 @@
 <div style="text-align:center; margin-top:40px; padding:20px 0; border-top:1px solid var(--border);">
   <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px;">
     JCB 登錄管家 &nbsp;·&nbsp;
-    <span id="footer-ver-tag" onclick="toggleFooterVer(event)" style="color:var(--purple); cursor:pointer; text-decoration:underline; text-underline-offset:3px; text-decoration-style:dotted;">v1.22 📋</span>
-    &nbsp;·&nbsp; 2026-05-05
+    <span id="footer-ver-tag" onclick="toggleFooterVer(event)" style="color:var(--purple); cursor:pointer; text-decoration:underline; text-underline-offset:3px; text-decoration-style:dotted;">v1.23 📋</span>
+    &nbsp;·&nbsp; 2026-11-10
   </div>
-  <div style="font-size:10px; color:var(--text-muted); margin-top:4px; opacity:.5;">&copy; 2026 · 10 張卡 · 全年上限 30 次</div>
+  <div style="font-size:10px; color:var(--text-muted); margin-top:4px; opacity:.5;">&copy; 2026 · 11 張卡 · 全年上限 33 次</div>
 </div>
 
 <div id="toast"></div>
@@ -736,8 +736,8 @@ const KNOWLEDGE = [
   {
     theme: { label:'💡 最大化技巧', tag:'終極密技', accent:['#a78bfa','#4f8ef7'], glow:'#a78bfa', bg:'var(--purple-dim)', border:'var(--purple)', tagColor:'var(--purple)' },
     spark:'💡',
-    title:'10 張卡全部登錄：效益最大化行動計畫',
-    body:'每月第一期（1–5日）是黃金窗口。建議固定每月 <span class="kp-highlight" style="background:var(--purple-dim);color:var(--purple);">1 號早上 9:01</span> 打開本 App，一次完成所有可登錄卡片，全年 30 次用盡，月均享受最多 10 張卡的完整回饋。搭配行事曆提醒，不再漏登。'
+    title:'11 張卡全部登錄：效益最大化行動計畫',
+    body:'每月第一期（1–5日）是黃金窗口。建議固定每月 <span class="kp-highlight" style="background:var(--purple-dim);color:var(--purple);">1 號早上 9:01</span> 打開本 App，一次完成所有可登錄卡片，全年 33 次用盡，月均享受最多 11 張卡的完整回饋。搭配行事曆提醒，不再漏登。'
   },
 ];
 
@@ -886,7 +886,7 @@ if ('serviceWorker' in navigator) {
     // 動態取得 sw.js 路徑，支援 GitHub Pages 子目錄
     // GitHub Pages 子目錄相容：用相對路徑註冊
     navigator.serviceWorker.register('./sw.js').then(reg => {
-      console.log('[SW] 已註冊 v1.22, scope:', reg.scope);
+      console.log('[SW] 已註冊 v1.23, scope:', reg.scope);
 
       // 立刻檢查有無新版
       reg.update();
@@ -954,6 +954,7 @@ const CARDS = [
   { id:'ctbc_lala',      bank:'中國信託', name:'LALAPORT JCB',  icon:'🛍️' },
   { id:'ctbc_muji',      bank:'中國信託', name:'無印良品 JCB',   icon:'📦' },
   { id:'ctbc_hanshen',   bank:'中國信託', name:'漢神百貨 JCB',   icon:'🏬' },
+  { id:'ctbc_jcbeasy',   bank:'中國信託', name:'晶緻悠遊 JCB',   icon:'💎' },
   { id:'esun_kumamon',   bank:'玉山銀行', name:'熊本熊 JCB',     icon:'🐻' },
   { id:'skb_easycard',   bank:'新光銀行', name:'新光悠遊 JCB',   icon:'🚇' },
   { id:'hua_red',        bank:'華南銀行', name:'寵愛紅卡 JCB',   icon:'❤️' },
@@ -981,6 +982,7 @@ const PRESET = {
   ],
   ctbc_muji:    [],
   ctbc_hanshen: [],
+  ctbc_jcbeasy: [],
   esun_kumamon: [
     { month:'2026-03', date:'2026/03/21 第三期' },
     { month:'2026-04', date:'2026/04/01 第一期' },
@@ -1113,7 +1115,7 @@ function sendNotif(title, body) {
 function testNotif() {
   if (Notification.permission!=='granted') { showToast('請先開啟通知權限'); return; }
   const state=getReminderState();
-  sendNotif(state?state.title:'JCB 登錄測試通知', state?state.body:'版本 v1.22 運作正常！');
+  sendNotif(state?state.title:'JCB 登錄測試通知', state?state.body:'版本 v1.23 運作正常！');
   showToast('已發送測試通知');
 }
 
@@ -1196,7 +1198,7 @@ function renderCards() {
 
 function renderSummary() {
   const t=now(), ym=ymKey(t);
-  const used=CARDS.reduce((a,c)=>a+total(c.id),0), max=30;
+  const used=CARDS.reduce((a,c)=>a+total(c.id),0), max=33;
   const pct=Math.round(used/max*100);
   const doneM=CARDS.filter(c=>usedMonth(c.id,ym)).length;
   const bars=CARDS.map(c=>{
@@ -1371,11 +1373,11 @@ function render(){
 }
 
 // 強制清除舊版 SW 快取（版本不符時）
-const APP_VERSION = 'v1.22';
+const APP_VERSION = 'v1.23';
 if ('caches' in window) {
   caches.keys().then(keys => {
     keys.forEach(key => {
-      if (!key.includes('1.22')) {
+      if (!key.includes('1.23')) {
         console.log('[App] 刪除舊快取:', key);
         caches.delete(key);
       }
